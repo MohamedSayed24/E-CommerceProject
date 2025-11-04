@@ -5,16 +5,34 @@ import { BlankLayoutComponent } from './Layouts/blank-layout/blank-layout.compon
 import { NotfoundComponent } from './Components/notfound/notfound.component';
 import { LoginComponent } from './Components/login/login.component';
 import { RegisterComponent } from './Components/register/register.component';
+import { HomeComponent } from './Components/home/home.component';
+import { CategoriesComponent } from './categories/categories.component';
+import { BrandsComponent } from './brands/brands.component';
+import { CartComponent } from './Components/cart/cart.component';
+import { authGuard } from './auth/auth-guard.guard';
 
 export const routes: Routes = [
-    {path:'',component:AuthLayoutComponent,children:[
-        {path:'',redirectTo:'login',pathMatch:'full'},
-        {path:'login',component:LoginComponent},
-        {path:'register',component:RegisterComponent}
-    ]},
-    {path:'blank',component:BlankLayoutComponent},
+  {
+    path: '',
+    component: AuthLayoutComponent,
+    children: [
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: 'login', component: LoginComponent },
+      { path: 'register', component: RegisterComponent },
+    ],
+  },
+  {
+    path: 'blank',
+    component: BlankLayoutComponent,
+    children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home', component: HomeComponent },
+      { path: 'categories', component: CategoriesComponent },
+      { path: 'brands', component: BrandsComponent },
+      { path: 'cart', component: CartComponent },
+    ],
+    canActivate: [authGuard],
+  },
 
-
-
-    {path:'**',component:NotfoundComponent}
+  { path: '**', component: NotfoundComponent },
 ];
