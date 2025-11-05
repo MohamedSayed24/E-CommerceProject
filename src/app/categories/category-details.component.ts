@@ -1,23 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CategoriesService } from '../services/category.service';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
 import { Observable } from 'rxjs';
+import { ProductService } from '../services/product.service';
 
 @Component({
   selector: 'app-category-details',
   standalone: true,
-  imports: [AsyncPipe, DatePipe],
+  imports: [AsyncPipe, RouterLink],
   templateUrl: './category-details.component.html',
 })
 export class CategoryDetailsComponent implements OnInit {
-  category$!: Observable<any>;
+  products$!: Observable<any>;
   categoryId!: string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private categoryService: CategoriesService
+    private productService: ProductService
   ) {}
 
   ngOnInit(): void {
@@ -25,8 +25,15 @@ export class CategoryDetailsComponent implements OnInit {
     this.categoryId = this.route.snapshot.paramMap.get('id') || '';
 
     if (this.categoryId) {
-      this.category$ = this.categoryService.getCategoryById(this.categoryId);
+      this.products$ = this.productService.getAllProducts();
     }
+  }
+
+  hasProductsInCategory(products: any[]): boolean {
+    if (!products || products.length === 0) {
+      return false;
+    }
+    return products.some((product) => product.category._id === this.categoryId);
   }
 
   goBack(): void {
