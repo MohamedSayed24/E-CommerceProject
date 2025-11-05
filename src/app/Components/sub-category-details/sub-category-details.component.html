@@ -1,0 +1,47 @@
+<div class="min-h-screen bg-gray-50">
+  @if (subCategory$ | async; as subCategoryData) {
+  
+  <!-- Hero Section with Subcategory Info -->
+  <div class="bg-gray-900 text-white border-b-4 border-gray-800">
+    <div class="container mx-auto px-6 py-8">
+      <!-- Back Button -->
+      <button (click)="goBack()" class="mb-6 flex items-center text-white hover:text-gray-300 font-medium transition-colors">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Categories
+      </button>
+
+      <!-- Subcategory Header -->
+      <div class="flex flex-col md:flex-row items-center gap-8">
+        <div class="w-32 h-32 md:w-40 md:h-40 rounded-lg bg-white 
+                    flex items-center justify-center shadow-lg border-4 border-gray-700">
+          <i class="fas fa-tag text-7xl text-gray-900"></i>
+        </div>
+        <div class="flex-1 text-center md:text-left">
+          <div class="inline-block bg-white text-gray-900 px-3 py-1 rounded text-sm font-semibold mb-3">
+            Subcategory
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold mb-3">
+            {{ subCategoryData.data.name }}
+          </h1>
+          <p class="text-gray-300 text-lg">{{ subCategoryData.data.slug }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Section -->
+ 
+  
+    }  
+
+   @else {
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-gray-900 mx-auto mb-4"></div>
+      <p class="text-gray-600 text-lg">Loading subcategory details...</p>
+    </div>
+  </div>
+  }
+</div>

@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CategoriesService } from '../services/category.service';
+
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
+import { CategoriesService } from '../../services/category.service';
+import { SubCategoriesComponent } from "../sub-categories/sub-categories.component";
 
 @Component({
   selector: 'app-category-details',
   standalone: true,
-  imports: [AsyncPipe, DatePipe],
+  imports: [AsyncPipe, DatePipe, SubCategoriesComponent],
   templateUrl: './category-details.component.html',
 })
 export class CategoryDetailsComponent implements OnInit {

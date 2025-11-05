@@ -8,13 +8,15 @@ import { LoginComponent } from './Components/login/login.component';
 import { RegisterComponent } from './Components/register/register.component';
 import { HomeComponent } from './Components/home/home.component';
 import { CategoriesComponent } from './categories/categories.component';
-import { CategoryDetailsComponent } from './categories/category-details.component';
+
 import { BrandsComponent } from './brands/brands.component';
 import { CartComponent } from './Components/cart/cart.component';
 import { authGuard } from './auth/auth-guard.guard';
 import { VerifyCodeComponent } from './Components/verify-code/verify-code.component';
 import { ResetPasswordComponent } from './Components/reset-password/reset-password.component';
 import { PasswordResetGuard } from './guards/password-reset.guard';
+import { CategoryDetailsComponent } from './Components/CategoryDetails/category-details.component';
+import { SubCategoryDetailsComponent } from './Components/sub-category-details/sub-category-details.component';
 
 export const routes: Routes = [
   {
@@ -45,6 +47,7 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'categories', component: CategoriesComponent },
       { path: 'categories/:id', component: CategoryDetailsComponent },
+      { path: 'subcategories/:id', component: SubCategoryDetailsComponent },
       { path: 'brands', component: BrandsComponent },
       { path: 'cart', component: CartComponent },
     ],
