@@ -8,6 +8,7 @@ import { LoginComponent } from './Components/login/login.component';
 import { RegisterComponent } from './Components/register/register.component';
 import { HomeComponent } from './Components/home/home.component';
 import { CategoriesComponent } from './categories/categories.component';
+import { CategoryDetailsComponent } from './categories/category-details.component';
 import { BrandsComponent } from './brands/brands.component';
 import { CartComponent } from './Components/cart/cart.component';
 import { authGuard } from './auth/auth-guard.guard';
@@ -23,9 +24,17 @@ export const routes: Routes = [
       { path: '', redirectTo: 'login', pathMatch: 'full' },
       { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
-      {path:'forgotPasswords',component:ForgetPasswordComponent},
-      {path:'verify-code',component:VerifyCodeComponent,canActivate:[PasswordResetGuard]},
-      {path:'reset-password',component:ResetPasswordComponent,canActivate:[PasswordResetGuard]}
+      { path: 'forgotPasswords', component: ForgetPasswordComponent },
+      {
+        path: 'verify-code',
+        component: VerifyCodeComponent,
+        canActivate: [PasswordResetGuard],
+      },
+      {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        canActivate: [PasswordResetGuard],
+      },
     ],
   },
   {
@@ -35,6 +44,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
       { path: 'categories', component: CategoriesComponent },
+      { path: 'categories/:id', component: CategoryDetailsComponent },
       { path: 'brands', component: BrandsComponent },
       { path: 'cart', component: CartComponent },
     ],
