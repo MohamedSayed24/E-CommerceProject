@@ -15,8 +15,13 @@ import { authGuard } from './auth/auth-guard.guard';
 import { VerifyCodeComponent } from './Components/verify-code/verify-code.component';
 import { ResetPasswordComponent } from './Components/reset-password/reset-password.component';
 import { PasswordResetGuard } from './guards/password-reset.guard';
+
 import { CategoryDetailsComponent } from './Components/CategoryDetails/category-details.component';
 import { SubCategoryDetailsComponent } from './Components/sub-category-details/sub-category-details.component';
+
+
+import { ProductComponent } from './Components/product/product.component';
+
 
 export const routes: Routes = [
   {
@@ -47,7 +52,11 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'categories', component: CategoriesComponent },
       { path: 'categories/:id', component: CategoryDetailsComponent },
+
       { path: 'subcategories/:id', component: SubCategoryDetailsComponent },
+
+      { path: 'products/:id', component: ProductComponent },
+
       { path: 'brands', component: BrandsComponent },
       { path: 'cart', component: CartComponent },
     ],
