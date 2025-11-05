@@ -4,8 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-brands',
   standalone: true,
   imports: [],
-  templateUrl: './brands.component.html',
-  styleUrl: './brands.component.css'
+  templateUrl: './brands.component.html'
 })
 export class BrandsComponent {
 

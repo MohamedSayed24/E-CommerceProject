@@ -6,8 +6,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   selector: 'app-nav-blank',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
-  templateUrl: './nav-blank.component.html',
-  styleUrl: './nav-blank.component.css',
+  templateUrl: './nav-blank.component.html'
 })
 export class NavBlankComponent {
   constructor(private authService: AuthService, private router: Router) {}

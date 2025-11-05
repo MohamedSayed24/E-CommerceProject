@@ -7,8 +7,7 @@ import { RegisterComponent } from '../register/register.component';
   selector: 'app-nav-auth',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
-  templateUrl: './nav-auth.component.html',
-  styleUrl: './nav-auth.component.css'
+  templateUrl: './nav-auth.component.html'
 })
 export class NavAuthComponent {
 

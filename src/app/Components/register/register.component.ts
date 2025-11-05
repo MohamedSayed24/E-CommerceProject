@@ -7,8 +7,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-register',
   standalone: true,
   imports: [RouterLink, FormsModule],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.css',
+  templateUrl: './register.component.html'
 })
 export class RegisterComponent {
   registeredData = {

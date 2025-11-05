@@ -1,3 +1,4 @@
+import { ForgetPasswordComponent } from './Components/forget-password/forget-password.component';
 import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { AuthLayoutComponent } from './Layouts/auth-layout/auth-layout.component';
@@ -10,6 +11,9 @@ import { CategoriesComponent } from './categories/categories.component';
 import { BrandsComponent } from './brands/brands.component';
 import { CartComponent } from './Components/cart/cart.component';
 import { authGuard } from './auth/auth-guard.guard';
+import { VerifyCodeComponent } from './Components/verify-code/verify-code.component';
+import { ResetPasswordComponent } from './Components/reset-password/reset-password.component';
+import { PasswordResetGuard } from './guards/password-reset.guard';
 
 export const routes: Routes = [
   {
@@ -19,6 +23,9 @@ export const routes: Routes = [
       { path: '', redirectTo: 'login', pathMatch: 'full' },
       { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
+      {path:'forgotPasswords',component:ForgetPasswordComponent},
+      {path:'verify-code',component:VerifyCodeComponent,canActivate:[PasswordResetGuard]},
+      {path:'reset-password',component:ResetPasswordComponent,canActivate:[PasswordResetGuard]}
     ],
   },
   {

@@ -6,8 +6,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-login',
   standalone: true,
   imports: [RouterLink, FormsModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
   credentials = { email: '', password: '' };
