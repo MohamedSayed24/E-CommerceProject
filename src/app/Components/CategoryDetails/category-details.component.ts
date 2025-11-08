@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CategoriesService } from '../../services/category.service';
-import { SubCategoriesComponent } from "../sub-categories/sub-categories.component";
+import { SubCategoriesComponent } from '../sub-categories/sub-categories.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ProductService } from '../../services/product.service';
 
 @Component({
@@ -31,8 +32,21 @@ export class CategoryDetailsComponent implements OnInit {
     if (this.categoryId) {
       // Initialize category data
       this.category$ = this.categoryService.getCategoryById(this.categoryId);
-      // Get all products
-      this.products$ = this.productService.getAllProducts();
+
+      // Fetch products from both pages and combine them
+      this.products$ = forkJoin([
+        this.productService.getAllProducts(1),
+        this.productService.getAllProducts(2),
+      ]).pipe(
+        map(([page1, page2]) => {
+          // Combine the data arrays from both pages
+          return {
+            data: [...page1.data, ...page2.data],
+            metadata: page1.metadata, // Keep metadata from first page
+            results: page1.results + page2.results,
+          };
+        })
+      );
     }
   }
 

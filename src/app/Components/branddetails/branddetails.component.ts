@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { BrandService } from '../../services/brand.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-branddetails',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './branddetails.component.html'
+  imports: [CommonModule, RouterLink],
+  templateUrl: './branddetails.component.html',
 })
 export class BranddetailsComponent implements OnInit {
   brandId!: string;
@@ -35,7 +35,7 @@ export class BranddetailsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading brand:', error);
-      }
+      },
     });
   }
 
@@ -50,7 +50,7 @@ export class BranddetailsComponent implements OnInit {
         this.errorMessage = 'Failed to load products';
         this.isLoading = false;
         console.error('Error loading products:', error);
-      }
+      },
     });
   }
 

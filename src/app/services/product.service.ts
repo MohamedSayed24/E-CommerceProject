@@ -8,8 +8,8 @@ export class ProductService {
   private readonly API_URL = 'https://ecommerce.routemisr.com/api/v1';
   constructor(private http: HttpClient) {}
 
-  getAllProducts(): Observable<any> {
-    return this.http.get(`${this.API_URL}/products`);
+  getAllProducts(page: number = 1): Observable<any> {
+    return this.http.get(`${this.API_URL}/products?page=${page}`);
   }
 
   getProductById(id: string): Observable<any> {

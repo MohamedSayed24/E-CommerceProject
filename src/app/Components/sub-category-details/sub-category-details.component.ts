@@ -1,23 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { Observable, forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CategoriesService } from '../../services/category.service';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-sub-category-details',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './sub-category-details.component.html'
+  imports: [CommonModule, AsyncPipe, RouterLink],
+  templateUrl: './sub-category-details.component.html',
 })
 export class SubCategoryDetailsComponent implements OnInit {
   subCategory$!: Observable<any>;
+  products$!: Observable<any>;
   subCategoryId!: string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private categoryService: CategoriesService
+    private categoryService: CategoriesService,
+    private productService: ProductService
   ) {}
 
   ngOnInit(): void {
@@ -25,8 +29,43 @@ export class SubCategoryDetailsComponent implements OnInit {
     this.subCategoryId = this.route.snapshot.paramMap.get('id') || '';
 
     if (this.subCategoryId) {
-      this.subCategory$ = this.categoryService.getSpecificSubCategory(this.subCategoryId);
+      this.subCategory$ = this.categoryService.getSpecificSubCategory(
+        this.subCategoryId
+      );
+
+      // Fetch products from both pages and combine them
+      this.products$ = forkJoin([
+        this.productService.getAllProducts(1),
+        this.productService.getAllProducts(2),
+      ]).pipe(
+        map(([page1, page2]) => {
+          // Combine the data arrays from both pages
+          return {
+            data: [...page1.data, ...page2.data],
+            metadata: page1.metadata,
+            results: page1.results + page2.results,
+          };
+        })
+      );
     }
+  }
+
+  hasProductsInSubcategory(products: any[]): boolean {
+    if (!products || products.length === 0) {
+      return false;
+    }
+    return products.some(
+      (product) =>
+        product.subcategory &&
+        product.subcategory.some((sub: any) => sub._id === this.subCategoryId)
+    );
+  }
+
+  isProductInSubcategory(product: any): boolean {
+    return (
+      product.subcategory &&
+      product.subcategory.some((sub: any) => sub._id === this.subCategoryId)
+    );
   }
 
   goBack(): void {
