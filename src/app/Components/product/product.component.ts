@@ -13,6 +13,7 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 export class ProductComponent implements OnInit {
   product$!: Observable<any>;
   productId!: string;
+  brandId!: string | null;
   selectedImage: string = '';
   quantity: number = 1;
 
@@ -26,6 +27,10 @@ export class ProductComponent implements OnInit {
     this.productId = this.route.snapshot.paramMap.get('id') || '';
     if (this.productId) {
       this.product$ = this.productService.getProductById(this.productId);
+    }
+    this.brandId = this.route.snapshot.paramMap.get('id') || null;
+    if (this.brandId) {
+      this.product$ = this.productService.getProductById(this.brandId);
     }
   }
 

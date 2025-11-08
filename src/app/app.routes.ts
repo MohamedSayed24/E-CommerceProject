@@ -18,7 +18,7 @@ import { PasswordResetGuard } from './guards/password-reset.guard';
 
 import { CategoryDetailsComponent } from './Components/CategoryDetails/category-details.component';
 import { SubCategoryDetailsComponent } from './Components/sub-category-details/sub-category-details.component';
-
+import { BranddetailsComponent } from './Components/branddetails/branddetails.component';
 
 import { ProductComponent } from './Components/product/product.component';
 
@@ -58,7 +58,9 @@ export const routes: Routes = [
       { path: 'products/:id', component: ProductComponent },
 
       { path: 'brands', component: BrandsComponent },
+      { path: 'brands/:id', component: BranddetailsComponent },
       { path: 'cart', component: CartComponent },
+  
     ],
     canActivate: [authGuard],
   },

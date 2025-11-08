@@ -1,1 +1,47 @@
-<p>brands works!</p>
+<!-- brands.component.html -->
+<div class="container mx-auto px-4 py-8">
+  <!-- Page Title -->
+  <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Our Brands</h1>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex justify-center items-center min-h-[400px]">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (errorMessage && !isLoading) {
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <!-- Brands Grid -->
+  @if (!isLoading && brands.length > 0) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      @for (brand of brands; track brand._id) {
+        <div (click)="viewBrandProducts(brand._id)"
+             class="bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300 cursor-pointer p-4 flex flex-col items-center justify-center group">
+          
+          <!-- Brand Image -->
+          <div class="w-full aspect-square flex items-center justify-center mb-3">
+            <img [src]="brand.image" 
+                 [alt]="brand.name" 
+                 class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300">
+          </div>
+          
+          <!-- Brand Name -->
+          <h3 class="text-sm font-semibold text-gray-700 text-center">
+            {{ brand.name }}
+          </h3>
+        </div>
+      } @empty {
+        <!-- No Brands Message -->
+        <div class="col-span-full text-center text-gray-500 py-12">
+          No brands available at the moment.
+        </div>
+      }
+    </div>
+  }
+</div>
