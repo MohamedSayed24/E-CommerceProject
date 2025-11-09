@@ -1,8 +1,8 @@
 // In reset-password.component.ts
 
 import { Router } from "@angular/router";
-import { AuthService } from "../../services/auth.service";
-import { PasswordResetService } from "../../services/passwordreset.service";
+import { AuthService } from "../../Core/services/auth.service";
+import { PasswordResetService } from "../../Core/services/passwordreset.service";
 import { Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 

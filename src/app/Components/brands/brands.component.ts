@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BrandService } from '../services/brand.service';
+import { BrandService } from '../../Core/services/brand.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -25,10 +25,12 @@ export class BrandsComponent implements OnInit {
 
   loadAllBrands(): void {
     this.isLoading = true;
-    this._brandService.getAllBrands().subscribe({
-      next: (response) => {
-        this.brands = response.data; // Adjust based on your API response structure
+    // Use getAllBrandsFromAllPages() to fetch all brands from all pages
+    this._brandService.getAllBrandsFromAllPages().subscribe({
+      next: (brands) => {
+        this.brands = brands; // Already returns just the array of brands
         this.isLoading = false;
+        console.log(`Loaded ${this.brands.length} brands from all pages`);
       },
       error: (error) => {
         this.errorMessage = 'Failed to load brands';

@@ -93,7 +93,7 @@ export class AuthService {
       })
     );
   }
-
+    
   private storeToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
   }

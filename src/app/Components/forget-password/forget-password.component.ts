@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { PasswordResetService } from '../../services/passwordreset.service';
+import { AuthService } from '../../Core/services/auth.service';
+import { PasswordResetService } from '../../Core/services/passwordreset.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 

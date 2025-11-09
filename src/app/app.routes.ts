@@ -7,9 +7,9 @@ import { NotfoundComponent } from './Components/notfound/notfound.component';
 import { LoginComponent } from './Components/login/login.component';
 import { RegisterComponent } from './Components/register/register.component';
 import { HomeComponent } from './Components/home/home.component';
-import { CategoriesComponent } from './categories/categories.component';
+import { CategoriesComponent } from './Components/categories/categories.component';
 
-import { BrandsComponent } from './brands/brands.component';
+import { BrandsComponent } from './Components/brands/brands.component';
 import { CartComponent } from './Components/cart/cart.component';
 import { authGuard } from './auth/auth-guard.guard';
 import { VerifyCodeComponent } from './Components/verify-code/verify-code.component';

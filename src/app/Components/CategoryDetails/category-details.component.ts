@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { CategoriesService } from '../../services/category.service';
+import { CategoriesService } from '../../Core/services/category.service';
 import { SubCategoriesComponent } from '../sub-categories/sub-categories.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ProductService } from '../../services/product.service';
+import { ProductService } from '../../Core/services/product.service';
 
 @Component({
   selector: 'app-category-details',

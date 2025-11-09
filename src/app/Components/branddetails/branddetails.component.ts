@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BrandService } from '../../services/brand.service';
+import { BrandService } from '../../Core/services/brand.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 

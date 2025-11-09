@@ -6,7 +6,7 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [NavAuthComponent, RouterOutlet],
+  imports: [NavAuthComponent, RouterOutlet, FooterComponent],
   templateUrl: './auth-layout.component.html',
   styleUrl: './auth-layout.component.css'
 })
