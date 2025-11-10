@@ -16,8 +16,13 @@ export class LoginComponent {
   });
 
   errorMessage: string = '';
+  showPassword: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   onLoginSubmit(): void {
     if (this.loginData.valid) {

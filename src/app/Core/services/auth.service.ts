@@ -82,7 +82,7 @@ export class AuthService {
   /**
    * 2. Handles the Register API request.
    */
-  register(userData: any): Observable<any> {
+  register(userData: object): Observable<any> {
     // Note: Registration may or may not return a token.
     return this.http.post(`${this.API_URL}/signup`, userData).pipe(
       tap((response: any) => {
