@@ -21,7 +21,7 @@ import { SubCategoryDetailsComponent } from './Components/sub-category-details/s
 import { BranddetailsComponent } from './Components/branddetails/branddetails.component';
 
 import { ProductComponent } from './Components/product/product.component';
-
+import { WishlistComponent } from './Components/wishlist/wishlist.component';
 
 export const routes: Routes = [
   {
@@ -60,7 +60,7 @@ export const routes: Routes = [
       { path: 'brands', component: BrandsComponent },
       { path: 'brands/:id', component: BranddetailsComponent },
       { path: 'cart', component: CartComponent },
-  
+      { path: 'wishlist', component: WishlistComponent },
     ],
     canActivate: [authGuard],
   },

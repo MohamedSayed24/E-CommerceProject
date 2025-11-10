@@ -5,6 +5,7 @@ import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CategoriesService } from '../../Core/services/category.service';
 import { ProductService } from '../../Core/services/product.service';
+import { WishlistService } from '../../Core/services/wishlist.service';
 
 @Component({
   selector: 'app-sub-category-details',
@@ -21,7 +22,8 @@ export class SubCategoryDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private categoryService: CategoriesService,
-    private productService: ProductService
+    private productService: ProductService,
+    private wishlistService: WishlistService
   ) {}
 
   ngOnInit(): void {
@@ -66,6 +68,20 @@ export class SubCategoryDetailsComponent implements OnInit {
       product.subcategory &&
       product.subcategory.some((sub: any) => sub._id === this.subCategoryId)
     );
+  }
+
+  addToWishlist(productId: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.wishlistService.addToWishlist({ productId }).subscribe({
+      next: (response) => {
+        console.log('Added to wishlist:', response);
+      },
+      error: (error) => {
+        console.error('Error adding to wishlist:', error);
+      },
+    });
   }
 
   goBack(): void {

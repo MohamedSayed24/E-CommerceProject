@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BrandService } from '../../Core/services/brand.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { WishlistService } from '../../Core/services/wishlist.service';
 
 @Component({
   selector: 'app-branddetails',
@@ -19,7 +20,8 @@ export class BranddetailsComponent implements OnInit {
   constructor(
     private _brandsService: BrandService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private wishlistService: WishlistService
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +52,20 @@ export class BranddetailsComponent implements OnInit {
         this.errorMessage = 'Failed to load products';
         this.isLoading = false;
         console.error('Error loading products:', error);
+      },
+    });
+  }
+
+  addToWishlist(productId: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.wishlistService.addToWishlist({ productId }).subscribe({
+      next: (response) => {
+        console.log('Added to wishlist:', response);
+      },
+      error: (error) => {
+        console.error('Error adding to wishlist:', error);
       },
     });
   }

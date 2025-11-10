@@ -7,10 +7,17 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
 
   // If a token exists, clone the request and add the Authorization header
   if (authToken) {
+    console.log(
+      'Token found in localStorage:',
+      authToken.substring(0, 20) + '...'
+    );
     const cloned = req.clone({
-      headers: req.headers.set('Authorization', `Bearer ${authToken}`),
+      headers: req.headers.set('token', authToken),
     });
+    console.log('Request headers:', cloned.headers.get('token'));
     return next(cloned);
+  } else {
+    console.log('No token found in localStorage');
   }
 
   // Otherwise, continue with the original request

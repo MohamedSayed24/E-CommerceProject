@@ -47,6 +47,12 @@
             <img [src]="product.imageCover" [alt]="product.title" [title]="product.title"
               class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" alt="img">
 
+            <!-- Wishlist Button -->
+            <button (click)="addToWishlist(product._id, $event)" title="Add to wishlist"
+              class="absolute top-2 right-2 bg-white text-gray-600 hover:text-red-500 p-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
+              <i class="fa-solid fa-heart text-lg"></i>
+            </button>
+
             <!-- Rating Badge -->
             @if (product.ratingsAverage) {
             <div
