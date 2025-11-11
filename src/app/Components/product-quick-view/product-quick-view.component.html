@@ -1,0 +1,199 @@
+<!-- Product Quick View Modal -->
+@if (isOpen && product) {
+  <div 
+    class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+    (click)="onBackdropClick($event)">
+    
+    <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-fadeIn">
+      
+      <!-- Close Button -->
+      <button 
+        (click)="onClose()"
+        class="absolute top-4 right-4 w-10 h-10 bg-white rounded-full shadow-lg hover:bg-gray-100 flex items-center justify-center z-10 transition-colors">
+        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+        
+        <!-- LEFT SIDE - Images -->
+        <div>
+          <!-- Main Image -->
+          <div class="bg-gray-100 rounded-xl overflow-hidden mb-4 aspect-square flex items-center justify-center">
+            <img 
+              [src]="selectedImage" 
+              [alt]="product.title"
+              class="w-full h-full object-contain p-8">
+          </div>
+
+          <!-- Thumbnail Images -->
+          @if (product.images && product.images.length > 0) {
+            <div class="grid grid-cols-4 gap-3">
+              <button 
+                (click)="selectImage(product.imageCover)"
+                [class.ring-2]="selectedImage === product.imageCover"
+                class="bg-gray-100 rounded-lg overflow-hidden aspect-square hover:ring-2 ring-red-500 transition-all">
+                <img [src]="product.imageCover" [alt]="product.title" class="w-full h-full object-contain p-2">
+              </button>
+              @for (image of product.images.slice(0, 3); track image) {
+                <button 
+                  (click)="selectImage(image)"
+                  [class.ring-2]="selectedImage === image"
+                  class="bg-gray-100 rounded-lg overflow-hidden aspect-square hover:ring-2 ring-red-500 transition-all">
+                  <img [src]="image" [alt]="product.title" class="w-full h-full object-contain p-2">
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- RIGHT SIDE - Product Info -->
+        <div class="flex flex-col">
+          
+          <!-- Product Title -->
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ product.title }}</h2>
+
+          <!-- Rating & Reviews -->
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex items-center">
+              @for (star of getStarArray(product.ratingsAverage); track $index) {
+                @if (star) {
+                  <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                  </svg>
+                } @else {
+                  <svg class="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                  </svg>
+                }
+              }
+            </div>
+            <span class="text-gray-500">({{ product.ratingsQuantity }} Reviews)</span>
+            @if (product.quantity && product.quantity > 0) {
+              <span class="text-green-600 font-medium">| In Stock</span>
+            } @else {
+              <span class="text-red-600 font-medium">| Out of Stock</span>
+            }
+          </div>
+
+          <!-- Price -->
+          <div class="flex items-center gap-4 mb-6">
+            @if (product.priceAfterDiscount) {
+              <span class="text-3xl font-bold text-red-500">${{ product.priceAfterDiscount }}</span>
+              <span class="text-xl text-gray-400 line-through">${{ product.price }}</span>
+              <span class="bg-red-100 text-red-600 text-sm font-semibold px-3 py-1 rounded-full">
+                -{{ getDiscountPercentage() }}%
+              </span>
+            } @else {
+              <span class="text-3xl font-bold text-gray-900">${{ product.price }}</span>
+            }
+          </div>
+
+          <!-- Description -->
+          @if (product.description) {
+            <p class="text-gray-600 mb-6 leading-relaxed">
+              {{ product.description }}
+            </p>
+          }
+
+          <!-- Divider -->
+          <hr class="my-6">
+
+          <!-- Category & Brand -->
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            @if (product.category) {
+              <div>
+                <span class="text-gray-500 text-sm">Category:</span>
+                <p class="font-semibold text-gray-900">{{ product.category.name }}</p>
+              </div>
+            }
+            @if (product.brand) {
+              <div>
+                <span class="text-gray-500 text-sm">Brand:</span>
+                <p class="font-semibold text-gray-900">{{ product.brand.name }}</p>
+              </div>
+            }
+          </div>
+
+          <!-- Quantity Selector -->
+          <div class="flex items-center gap-4 mb-6">
+            <span class="text-gray-700 font-medium">Quantity:</span>
+            <div class="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden">
+              <button 
+                (click)="decrementQuantity()"
+                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                </svg>
+              </button>
+              <span class="px-6 py-2 font-semibold">{{ quantity }}</span>
+              <button 
+                (click)="incrementQuantity()"
+                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-4 mb-4">
+            <button 
+              (click)="addToCart()"
+              [disabled]="isAddingToCart"
+              class="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+              @if (isAddingToCart) {
+                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Adding...</span>
+              } @else {
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <span>Add to Cart</span>
+              }
+            </button>
+
+            <button 
+              (click)="addToWishlist()"
+              [disabled]="isAddingToWishlist"
+              class="w-12 h-12 border-2 border-gray-300 hover:border-red-500 hover:bg-red-50 rounded-lg flex items-center justify-center transition-colors">
+              <svg class="w-6 h-6 text-gray-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- View Full Details Button -->
+          <button 
+            (click)="onViewDetails()"
+            class="w-full border-2 border-gray-300 hover:border-red-500 text-gray-700 hover:text-red-500 font-semibold py-3 rounded-lg transition-colors">
+            View Full Details
+          </button>
+
+          <!-- Additional Info -->
+          <div class="mt-6 space-y-3 text-sm">
+            <div class="flex items-center gap-2 text-gray-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span>Free delivery for orders over $140</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              <span>30 days money back guarantee</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

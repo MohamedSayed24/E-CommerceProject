@@ -1,78 +1,90 @@
 <!-- home.component.html -->
 <div class="home-container">
-
-  <!-- Main Layout: Sidenav + Content -->
-  <div class="flex gap-8 container mx-auto px-4 py-8">
-
-    <!-- ========================================
-         LEFT SIDENAV - CATEGORIES
-         ======================================== -->
-    <aside class="hidden lg:block w-64 flex-shrink-0">
-      <nav class="bg-white rounded-lg shadow-sm p-4">
-        @if (isLoadingCategories) {
-        <div class="space-y-3">
-          @for (item of [1,2,3,4,5]; track item) {
-          <div class="h-10 bg-gray-200 animate-pulse rounded"></div>
+  
+  <!-- TOP SECTION: Sidenav + Hero Banner -->
+  <div class="container mx-auto px-4 py-8">
+    <div class="flex gap-8">
+      
+      <!-- LEFT SIDENAV - CATEGORIES -->
+      <aside class="hidden lg:block w-64 flex-shrink-0">
+        <nav class="bg-white rounded-lg shadow-sm p-4">
+          @if (isLoadingCategories) {
+            <div class="space-y-3">
+              @for (item of [1,2,3,4,5]; track item) {
+                <div class="h-10 bg-gray-200 animate-pulse rounded"></div>
+              }
+            </div>
+          } @else {
+            <ul class="space-y-2">
+              @for (category of categories; track category._id) {
+                <li>
+                  <button
+                    (click)="navigateToCategory(category._id)"
+                    class="w-full flex items-center justify-between px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                    <span class="text-gray-700">{{ category.name }}</span>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </li>
+              }
+            </ul>
           }
-        </div>
-        } @else {
-        <ul class="space-y-2">
-          @for (category of categories; track category._id) {
-          <li>
-            <button (click)="navigateToCategory(category._id)"
-              class="w-full flex items-center justify-between px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors text-left">
-              <span class="text-gray-700">{{ category.name }}</span>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </li>
-          }
-        </ul>
-        }
-      </nav>
-    </aside>
-
-    <!-- ========================================
-         RIGHT CONTENT AREA
-         ======================================== -->
-    <main class="flex-1 min-w-0">
+        </nav>
+      </aside>
 
       <!-- ========================================
            HERO BANNER SLIDER
            ======================================== -->
-      <section class="mb-12">
-        <swiper-container class="hero-swiper" navigation="true" pagination="true" pagination-clickable="true"
-          autoplay="true" autoplay-delay="4000" autoplay-disable-on-interaction="false" space-between="0"
-          slides-per-view="1" loop="true">
-          @for (banner of banners; track $index) {
-          <swiper-slide>
-            <div class="relative bg-black rounded-lg overflow-hidden h-[400px]">
-              <img [src]="banner.image" [alt]="banner.title" [title]="banner.title"
-                class="w-full h-full object-cover opacity-70">
-              <div class="absolute inset-0 flex flex-col justify-center items-start p-12 text-white">
-                <div class="flex items-center gap-3 mb-4">
-                  <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                      d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-                  </svg>
-                  <span class="text-sm">{{ banner.title }}</span>
+      <div class="flex-1 min-w-0">
+        <section class="mb-12">
+          <swiper-container
+            class="hero-swiper w-full"
+            navigation="true"
+            pagination="true"
+            pagination-clickable="true"
+            autoplay="true"
+            autoplay-delay="4000"
+            autoplay-disable-on-interaction="false"
+            space-between="0"
+            slides-per-view="1"
+            loop="true">
+            @for (banner of banners; track $index) {
+              <swiper-slide>
+                <div class="relative bg-gradient-to-r from-gray-900 to-black rounded-lg overflow-hidden h-[400px]">
+                  <img 
+                    [src]="banner.image" 
+                    [alt]="banner.title"
+                    [title]="banner.title"
+                    (error)="$any($event.target).style.display='none'"
+                    class="absolute inset-0 w-full h-full object-cover opacity-50">
+                  <div class="absolute inset-0 flex flex-col justify-center items-start p-12 text-white z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                      <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                      </svg>
+                      <span class="text-sm">{{ banner.title }}</span>
+                    </div>
+                    <h2 class="text-5xl font-bold mb-6">{{ banner.subtitle }}</h2>
+                    <a [href]="banner.link" class="flex items-center gap-2 text-white hover:text-gray-200 transition-colors border-b-2 border-white pb-1">
+                      <span>{{ banner.buttonText }}</span>
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                      </svg>
+                    </a>
+                  </div>
                 </div>
-                <h2 class="text-5xl font-bold mb-6">{{ banner.subtitle }}</h2>
-                <a [href]="banner.link"
-                  class="flex items-center gap-2 text-white hover:text-gray-200 transition-colors border-b-2 border-white pb-1">
-                  <span>{{ banner.buttonText }}</span>
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </swiper-slide>
-          }
-        </swiper-container>
-      </section>
+              </swiper-slide>
+            }
+          </swiper-container>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTERED CONTENT AREA FOR REMAINING SECTIONS -->
+  <div class="container mx-auto px-4 max-w-6xl">
+    <main class="w-full">
 
       <!-- ========================================
            FLASH SALES SECTION
@@ -138,105 +150,121 @@
           }
         </div>
         } @else {
-        <swiper-container class="flash-sales-swiper" navigation-next-el=".swiper-button-next-custom"
-          navigation-prev-el=".swiper-button-prev-custom" autoplay="true" autoplay-delay="3000"
-          autoplay-disable-on-interaction="false" loop="true" space-between="24" slides-per-view="1" breakpoints='{
-              "640": {"slidesPerView": 2},
-              "768": {"slidesPerView": 3},
-              "1024": {"slidesPerView": 4}
+          <swiper-container
+            class="flash-sales-swiper"
+            navigation-next-el=".swiper-button-next-custom"
+            navigation-prev-el=".swiper-button-prev-custom"
+            autoplay="true"
+            autoplay-delay="3000"
+            autoplay-disable-on-interaction="false"
+            loop="true"
+            space-between="30"
+            slides-per-view="1"
+            breakpoints='{
+              "640": {"slidesPerView": 2, "spaceBetween": 24},
+              "768": {"slidesPerView": 3, "spaceBetween": 28},
+              "1024": {"slidesPerView": 4, "spaceBetween": 30}
             }'>
-          @for (product of flashSaleProducts; track product._id) {
-          <swiper-slide>
-            <div
-              class="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-
-              <!-- Product Image Container -->
-              <div class="relative bg-gray-100 aspect-square overflow-hidden">
-                <!-- Discount Badge (only show if has discount) -->
-                @if (product.discountPercentage > 0) {
-                <div class="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded z-10">
-                  -{{ product.discountPercentage }}%
-                </div>
-                }
-
-                <!-- Action Icons -->
-                <div class="absolute top-3 right-3 flex flex-col gap-2 z-10">
-                  <button (click)="addToWishlist(product._id, $event)" title="Add to wishlist"
-                    class="p-2 bg-white rounded-full hover:bg-red-50 transition-colors shadow-md">
-                    <svg class="w-5 h-5 text-gray-700 hover:text-red-500" fill="none" stroke="currentColor"
-                      viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                  <button (click)="viewProductDetails(product._id)" title="View details"
-                    class="p-2 bg-white rounded-full hover:bg-red-50 transition-colors shadow-md">
-                    <svg class="w-5 h-5 text-gray-700 hover:text-blue-500" fill="none" stroke="currentColor"
-                      viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  </button>
-                </div>
-
-                <!-- Product Image -->
-                <img [src]="product.imageCover" [alt]="product.title" [title]="product.title"
-                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 cursor-pointer"
-                  (click)="viewProductDetails(product._id)">
-
-                <!-- Add to Cart Button (Appears on Hover) -->
-                <button (click)="addToCart(product._id, $event)"
-                  class="absolute bottom-0 left-0 right-0 bg-black text-white py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-medium">
-                  Add To Cart
-                </button>
-              </div>
-
-              <!-- Product Details -->
-              <div class="p-4">
-                <h3
-                  class="font-semibold text-gray-800 mb-2 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors"
-                  (click)="viewProductDetails(product._id)">
-                  {{ product.title }}
-                </h3>
-
-                <!-- Prices -->
-                <div class="flex items-center gap-3 mb-2">
-                  @if (product.priceAfterDiscount) {
-                  <span class="text-red-500 font-bold text-lg">
-                    {{ product.priceAfterDiscount }} EGP
-                  </span>
-                  <span class="text-gray-400 line-through text-sm">
-                    {{ product.price }} EGP
-                  </span>
-                  } @else {
-                  <span class="text-gray-800 font-bold text-lg">
-                    {{ product.price }} EGP
-                  </span>
-                  }
-                </div>
-
-                <!-- Rating -->
-                <div class="flex items-center gap-2">
-                  <div class="flex gap-1">
-                    @for (star of getStarArray(product.ratingsAverage); track $index) {
-                    <svg class="w-4 h-4" [class.text-yellow-400]="star" [class.text-gray-300]="!star"
-                      fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
+            @for (product of flashSaleProducts; track product._id) {
+              <swiper-slide>
+                <div class="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-[420px]">
+                  
+                  <!-- Product Image Container -->
+                  <div class="relative bg-gray-100 h-72 overflow-hidden">
+                    <!-- Discount Badge (only show if has discount) -->
+                    @if (product.discountPercentage > 0) {
+                      <div class="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded z-10">
+                        -{{ product.discountPercentage }}%
+                      </div>
                     }
+                    
+                    <!-- Action Icons -->
+                    <div class="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                      <button 
+                        (click)="addToWishlist(product._id, $event)"
+                        title="Add to wishlist"
+                        class="p-2 bg-white rounded-full hover:bg-red-50 transition-colors shadow-md">
+                        <svg class="w-5 h-5 text-gray-700 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                      </button>
+                      <button 
+                        (click)="openQuickView(product, $event)"
+                        title="Quick view"
+                        class="p-2 bg-white rounded-full hover:bg-blue-50 transition-colors shadow-md">
+                        <svg class="w-5 h-5 text-gray-700 hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Product Image -->
+                    <img 
+                      [src]="product.imageCover" 
+                      [alt]="product.title"
+                      [title]="product.title"
+                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 cursor-pointer"
+                      (click)="openQuickView(product, $event)">
+                    
+                    <!-- Add to Cart Button (Appears on Hover) -->
+                    <button
+                      (click)="addToCart(product._id, $event)"
+                      class="absolute bottom-0 left-0 right-0 bg-black text-white py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-medium">
+                      Add To Cart
+                    </button>
                   </div>
-                  <span class="text-gray-500 text-sm">({{ product.ratingsQuantity }})</span>
+
+                  <!-- Product Details -->
+                  <div class="p-4">
+                    <h3 
+                      class="font-semibold text-gray-800 mb-2 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors"
+                      (click)="viewProductDetails(product._id)">
+                      {{ product.title }}
+                    </h3>
+                    
+                    <!-- Prices -->
+                    <div class="flex items-center gap-3 mb-2">
+                      @if (product.priceAfterDiscount) {
+                        <span class="text-red-500 font-bold text-lg">
+                          {{ product.priceAfterDiscount }} EGP
+                        </span>
+                        <span class="text-gray-400 line-through text-sm">
+                          {{ product.price }} EGP
+                        </span>
+                      } @else {
+                        <span class="text-gray-800 font-bold text-lg">
+                          {{ product.price }} EGP
+                        </span>
+                      }
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="flex items-center gap-2">
+                      <div class="flex gap-1">
+                        @for (star of getStarArray(product.ratingsAverage); track $index) {
+                          <svg 
+                            class="w-4 h-4"
+                            [class.text-yellow-400]="star"
+                            [class.text-gray-300]="!star"
+                            fill="currentColor" 
+                            viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        }
+                      </div>
+                      <span class="text-gray-500 text-sm">({{ product.ratingsQuantity }})</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </swiper-slide>
-          }
-        </swiper-container>
+              </swiper-slide>
+            }
+          </swiper-container>
         }
       </section>
+
+      <!-- Divider -->
+      <hr class="my-12 border-gray-200">
 
       <!-- ========================================
            VIEW ALL PRODUCTS BUTTON
@@ -301,63 +329,706 @@
               "768": {"slidesPerView": 4},
               "1024": {"slidesPerView": 6}
             }'>
-          @for (category of categories; track category._id; let i = $index) {
-          <swiper-slide>
-            <div (click)="navigateToCategory(category._id)"
-              [class]="i === 3 ? 'group cursor-pointer bg-red-500 border-2 border-red-500 rounded-lg p-6 hover:shadow-xl transition-all duration-300 flex flex-col items-center justify-center h-40' : 'group cursor-pointer bg-white border-2 border-gray-200 hover:border-red-500 rounded-lg p-6 hover:shadow-xl transition-all duration-300 flex flex-col items-center justify-center h-40'">
-
-              <!-- Category Image/Icon -->
-              @if (category.image) {
-              <div class="w-16 h-16 mb-3 overflow-hidden flex items-center justify-center">
-                <img [src]="category.image" [alt]="category.name" [title]="category.name"
-                  [class]="i === 3 ? 'w-full h-full object-contain brightness-0 invert' : 'w-full h-full object-contain group-hover:scale-110 transition-transform duration-300'">
-              </div>
-              } @else {
-              <div
-                [class]="i === 3 ? 'w-16 h-16 mb-3 rounded-full bg-white/20 flex items-center justify-center' : 'w-16 h-16 mb-3 rounded-full bg-gray-100 group-hover:bg-red-50 flex items-center justify-center transition-colors duration-300'">
-                <svg class="w-8 h-8" [class]="i === 3 ? 'text-white' : 'text-gray-600 group-hover:text-red-500'"
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-              </div>
-              }
-
-              <!-- Category Name -->
-              <h3
-                [class]="i === 3 ? 'text-white font-semibold text-center text-sm' : 'text-gray-800 group-hover:text-red-500 font-semibold text-center text-sm transition-colors duration-300'">
-                {{ category.name }}
-              </h3>
-            </div>
-          </swiper-slide>
-          }
-        </swiper-container>
+            @for (category of categories; track category._id; let i = $index) {
+              <swiper-slide>
+                <div 
+                  (click)="navigateToCategory(category._id)"
+                  [class]="i === 3 ? 'group cursor-pointer bg-red-500 border-2 border-red-500 rounded-lg p-8 hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center h-52' : 'group cursor-pointer bg-white border-2 border-gray-200 hover:border-red-500 hover:shadow-2xl rounded-lg p-8 transition-all duration-300 flex flex-col items-center justify-center h-52'">
+                  
+                  <!-- Category Image/Icon -->
+                  @if (category.image) {
+                    <div class="w-24 h-24 mb-4 overflow-hidden flex items-center justify-center">
+                      <img 
+                        [src]="category.image" 
+                        [alt]="category.name"
+                        [title]="category.name"
+                        [class]="i === 3 ? 'w-full h-full object-contain brightness-0 invert' : 'w-full h-full object-contain group-hover:scale-110 transition-transform duration-300'">
+                    </div>
+                  } @else {
+                    <div [class]="i === 3 ? 'w-24 h-24 mb-4 rounded-full bg-white/20 flex items-center justify-center' : 'w-24 h-24 mb-4 rounded-full bg-gray-100 group-hover:bg-red-50 flex items-center justify-center transition-colors duration-300'">
+                      <svg class="w-12 h-12" [class]="i === 3 ? 'text-white' : 'text-gray-600 group-hover:text-red-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                      </svg>
+                    </div>
+                  }
+                  
+                  <!-- Category Name -->
+                  <h3 
+                    [class]="i === 3 ? 'text-white font-semibold text-center text-base' : 'text-gray-800 group-hover:text-red-500 font-semibold text-center text-base transition-colors duration-300'">
+                    {{ category.name }}
+                  </h3>
+                </div>
+              </swiper-slide>
+            }
+          </swiper-container>
         }
       </section>
 
       <!-- Divider -->
       <hr class="my-12 border-gray-200">
 
+      <!-- ========================================
+           BEST SELLING PRODUCTS SECTION
+           ======================================== -->
+      <section class="mb-12">
+        
+        <!-- Section Header -->
+        <div class="mb-8">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-5 h-10 bg-red-500 rounded"></div>
+            <h3 class="text-red-500 font-semibold">This Month</h3>
+          </div>
+          
+          <div class="flex items-center justify-between flex-wrap gap-4">
+            <h2 class="text-3xl font-bold">Best Selling Products</h2>
+            
+            <!-- Navigation Arrows -->
+            <div class="flex gap-2">
+              <button class="swiper-button-prev-bestselling p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" title="Previous product">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <button class="swiper-button-next-bestselling p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" title="Next product">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Best Selling Products Slider -->
+        @if (isLoadingBestSelling) {
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @for (item of [1,2,3,4]; track item) {
+              <div class="bg-gray-200 animate-pulse rounded-lg h-80"></div>
+            }
+          </div>
+        } @else {
+          <swiper-container
+            class="bestselling-swiper"
+            navigation-next-el=".swiper-button-next-bestselling"
+            navigation-prev-el=".swiper-button-prev-bestselling"
+            autoplay="true"
+            autoplay-delay="3500"
+            autoplay-disable-on-interaction="false"
+            loop="true"
+            space-between="30"
+            slides-per-view="1"
+            breakpoints='{
+              "640": {"slidesPerView": 2, "spaceBetween": 24},
+              "768": {"slidesPerView": 3, "spaceBetween": 28},
+              "1024": {"slidesPerView": 4, "spaceBetween": 30}
+            }'>
+            @for (product of bestSellingProducts; track product._id) {
+              <swiper-slide>
+                <div class="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-[420px]">
+                  
+                  <!-- Product Image Container -->
+                  <div class="relative bg-gray-100 h-72 overflow-hidden">
+                    <!-- Discount Badge -->
+                    @if (product.discountPercentage > 0) {
+                      <div class="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded z-10">
+                        -{{ product.discountPercentage }}%
+                      </div>
+                    }
+                    
+                    <!-- Action Icons -->
+                    <div class="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                      <button 
+                        (click)="addToWishlist(product._id, $event)"
+                        title="Add to wishlist"
+                        class="p-2 bg-white rounded-full hover:bg-red-50 transition-colors shadow-md">
+                        <svg class="w-5 h-5 text-gray-700 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                      </button>
+                      <button 
+                        (click)="openQuickView(product, $event)"
+                        title="Quick view"
+                        class="p-2 bg-white rounded-full hover:bg-blue-50 transition-colors shadow-md">
+                        <svg class="w-5 h-5 text-gray-700 hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Product Image -->
+                    <img 
+                      [src]="product.imageCover" 
+                      [alt]="product.title"
+                      [title]="product.title"
+                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 cursor-pointer"
+                      (click)="openQuickView(product, $event)">
+                    
+                    <!-- Add to Cart Button (Appears on Hover) -->
+                    <button
+                      (click)="addToCart(product._id, $event)"
+                      title="Add to cart"
+                      class="absolute bottom-0 left-0 right-0 bg-black text-white py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-medium">
+                      Add To Cart
+                    </button>
+                  </div>
+
+                  <!-- Product Details -->
+                  <div class="p-4">
+                    <h3 
+                      class="font-semibold text-gray-800 mb-2 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors"
+                      (click)="viewProductDetails(product._id)">
+                      {{ product.title }}
+                    </h3>
+                    
+                    <!-- Prices -->
+                    <div class="flex items-center gap-3 mb-2">
+                      @if (product.priceAfterDiscount) {
+                        <span class="text-red-500 font-bold text-lg">
+                          {{ product.priceAfterDiscount }} EGP
+                        </span>
+                        <span class="text-gray-400 line-through text-sm">
+                          {{ product.price }} EGP
+                        </span>
+                      } @else {
+                        <span class="text-gray-800 font-bold text-lg">
+                          {{ product.price }} EGP
+                        </span>
+                      }
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="flex items-center gap-2">
+                      <div class="flex gap-1">
+                        @for (star of getStarArray(product.ratingsAverage); track $index) {
+                          <svg 
+                            class="w-4 h-4"
+                            [class.text-yellow-400]="star"
+                            [class.text-gray-300]="!star"
+                            fill="currentColor" 
+                            viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        }
+                      </div>
+                      <span class="text-gray-500 text-sm">({{ product.ratingsQuantity }})</span>
+                    </div>
+                  </div>
+                </div>
+              </swiper-slide>
+            }
+          </swiper-container>
+        }
+      </section>
+
+      <!-- Divider -->
+      <hr class="my-12 border-gray-200">
+
+      <!-- ========================================
+           PROMOTIONAL BANNER SECTION
+           ======================================== -->
+      <section class="mb-12">
+        <div class="relative bg-gradient-to-r from-gray-900 via-gray-800 to-black rounded-2xl overflow-hidden shadow-2xl">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-12 lg:p-16">
+            
+            <!-- Left Content -->
+            <div class="text-white space-y-6">
+              <div>
+                <span class="text-green-400 font-semibold text-sm uppercase tracking-wider">Categories</span>
+                <h2 class="text-4xl lg:text-5xl font-bold mt-3 mb-6">
+                  Enhance Your<br>Music Experience
+                </h2>
+              </div>
+
+              <!-- Countdown Timer -->
+              <div class="flex gap-4">
+                <div class="bg-white rounded-full w-16 h-16 flex flex-col items-center justify-center text-black">
+                  <span class="text-xs font-medium">Hours</span>
+                  <span class="text-lg font-bold">{{ formatNumber(countdown.hours) }}</span>
+                </div>
+                <div class="bg-white rounded-full w-16 h-16 flex flex-col items-center justify-center text-black">
+                  <span class="text-xs font-medium">Days</span>
+                  <span class="text-lg font-bold">{{ formatNumber(countdown.days) }}</span>
+                </div>
+                <div class="bg-white rounded-full w-16 h-16 flex flex-col items-center justify-center text-black">
+                  <span class="text-xs font-medium">Minutes</span>
+                  <span class="text-lg font-bold">{{ formatNumber(countdown.minutes) }}</span>
+                </div>
+                <div class="bg-white rounded-full w-16 h-16 flex flex-col items-center justify-center text-black">
+                  <span class="text-xs font-medium">Seconds</span>
+                  <span class="text-lg font-bold">{{ formatNumber(countdown.seconds) }}</span>
+                </div>
+              </div>
+
+              <!-- CTA Button -->
+              <div class="pt-4">
+                <button 
+                  (click)="viewAllProducts()"
+                  class="bg-red-500 hover:bg-red-600 text-white font-semibold px-12 py-4 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-200">
+                  Buy Now!
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Image -->
+            <div class="flex items-center justify-center">
+              <img 
+                src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&h=400&fit=crop" 
+                alt="JBL Speaker"
+                class="w-full max-w-md h-auto object-contain drop-shadow-2xl">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Divider -->
+      <hr class="my-12 border-gray-200">
+
+      <!-- ========================================
+           EXPLORE OUR PRODUCTS SECTION
+           ======================================== -->
+      <section class="mb-12">
+        <!-- Section Header -->
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-5 h-10 bg-red-500 rounded"></div>
+              <span class="text-red-500 font-semibold">Our Products</span>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900">Explore Our Products</h2>
+          </div>
+          <!-- Navigation Arrows -->
+          <div class="flex gap-2">
+            <button 
+              title="Previous product"
+              class="explore-prev-btn w-12 h-12 rounded-full bg-gray-100 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <button 
+              title="Next product"
+              class="explore-next-btn w-12 h-12 rounded-full bg-gray-100 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Grid with Two Swipers -->
+        @if (isLoadingExploreProducts) {
+          <div class="flex justify-center items-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+          </div>
+        } @else {
+          <!-- First Row Swiper -->
+          <swiper-container
+            class="explore-products-swiper mb-6"
+            slides-per-view="1"
+            space-between="30"
+            navigation="true"
+            navigation-prev-el=".explore-prev-btn"
+            navigation-next-el=".explore-next-btn"
+            autoplay-delay="3000"
+            autoplay-disable-on-interaction="false"
+            loop="true"
+            breakpoints='{"640": {"slidesPerView": 2, "spaceBetween": 24}, "768": {"slidesPerView": 3, "spaceBetween": 28}, "1024": {"slidesPerView": 4, "spaceBetween": 30}}'>
+            @for (product of exploreProducts.slice(0, 6); track product._id) {
+              <swiper-slide>
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow h-[420px]">
+                  <!-- Product Image Container -->
+                  <div class="relative bg-white p-8 h-72 flex items-center justify-center group">
+                    <!-- NEW Badge (if applicable) -->
+                    @if (product.sold && product.sold < 10) {
+                      <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-md z-10">
+                        NEW
+                      </span>
+                    }
+
+                    <!-- Product Image -->
+                    <img 
+                      [src]="product.imageCover" 
+                      [alt]="product.title"
+                      [title]="product.title"
+                      class="w-full h-full object-contain cursor-pointer transition-transform group-hover:scale-105"
+                      (click)="viewProductDetails(product._id)">
+
+                    <!-- Action Icons -->
+                    <div class="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                      <button 
+                        (click)="addToWishlist(product._id, $event)"
+                        title="Add to wishlist"
+                        class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-red-50 transition-colors group/wishlist">
+                        <svg class="w-5 h-5 text-gray-600 group-hover/wishlist:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                      </button>
+                      <button 
+                        (click)="viewProductDetails(product._id)"
+                        title="View details"
+                        class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Add to Cart Button (appears on hover) -->
+                    <button 
+                      (click)="addToCart(product._id, $event)"
+                      class="absolute bottom-0 left-0 right-0 bg-black text-white py-2 px-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Add To Cart
+                    </button>
+                  </div>
+
+                  <!-- Product Info -->
+                  <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2 truncate cursor-pointer hover:text-red-500" 
+                        (click)="viewProductDetails(product._id)">
+                      {{ product.title }}
+                    </h3>
+
+                    <!-- Price -->
+                    <div class="flex items-center gap-3 mb-2">
+                      @if (product.priceAfterDiscount) {
+                        <span class="text-red-500 font-semibold text-lg">${{ product.priceAfterDiscount }}</span>
+                        <span class="text-gray-400 line-through text-sm">${{ product.price }}</span>
+                      } @else {
+                        <span class="text-red-500 font-semibold text-lg">${{ product.price }}</span>
+                      }
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="flex items-center gap-2">
+                      <div class="flex items-center">
+                        @for (star of getStarArray(product.ratingsAverage); track $index) {
+                          @if (star) {
+                            <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                          } @else {
+                            <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                          }
+                        }
+                      </div>
+                      <span class="text-gray-500 text-sm">({{ product.ratingsQuantity }})</span>
+                    </div>
+
+                    <!-- Color Options (if available) -->
+                    <div class="flex gap-2 mt-3">
+                      <div class="w-5 h-5 rounded-full border-2 border-gray-300 bg-red-500 cursor-pointer"></div>
+                      <div class="w-5 h-5 rounded-full border-2 border-gray-300 bg-black cursor-pointer"></div>
+                    </div>
+                  </div>
+                </div>
+              </swiper-slide>
+            }
+          </swiper-container>
+
+          <!-- Second Row Swiper -->
+          <swiper-container
+            class="explore-products-swiper-2"
+            slides-per-view="1"
+            space-between="30"
+            autoplay-delay="3500"
+            autoplay-disable-on-interaction="false"
+            loop="true"
+            breakpoints='{"640": {"slidesPerView": 2, "spaceBetween": 24}, "768": {"slidesPerView": 3, "spaceBetween": 28}, "1024": {"slidesPerView": 4, "spaceBetween": 30}}'>
+            @for (product of exploreProducts.slice(6, 12); track product._id) {
+              <swiper-slide>
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow h-[420px]">
+                  <!-- Product Image Container -->
+                  <div class="relative bg-white p-8 h-72 flex items-center justify-center group">
+                    <!-- NEW Badge (if applicable) -->
+                    @if (product.sold && product.sold < 10) {
+                      <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-md z-10">
+                        NEW
+                      </span>
+                    }
+
+                    <!-- Product Image -->
+                    <img 
+                      [src]="product.imageCover" 
+                      [alt]="product.title"
+                      [title]="product.title"
+                      class="w-full h-full object-contain cursor-pointer transition-transform group-hover:scale-105"
+                      (click)="viewProductDetails(product._id)">
+
+                    <!-- Action Icons -->
+                    <div class="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                      <button 
+                        (click)="addToWishlist(product._id, $event)"
+                        title="Add to wishlist"
+                        class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-red-50 transition-colors group/wishlist">
+                        <svg class="w-5 h-5 text-gray-600 group-hover/wishlist:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                      </button>
+                      <button 
+                        (click)="viewProductDetails(product._id)"
+                        title="View details"
+                        class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Add to Cart Button (appears on hover) -->
+                    <button 
+                      (click)="addToCart(product._id, $event)"
+                      class="absolute bottom-0 left-0 right-0 bg-black text-white py-2 px-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Add To Cart
+                    </button>
+                  </div>
+
+                  <!-- Product Info -->
+                  <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2 truncate cursor-pointer hover:text-red-500" 
+                        (click)="viewProductDetails(product._id)">
+                      {{ product.title }}
+                    </h3>
+
+                    <!-- Price -->
+                    <div class="flex items-center gap-3 mb-2">
+                      @if (product.priceAfterDiscount) {
+                        <span class="text-red-500 font-semibold text-lg">${{ product.priceAfterDiscount }}</span>
+                        <span class="text-gray-400 line-through text-sm">${{ product.price }}</span>
+                      } @else {
+                        <span class="text-red-500 font-semibold text-lg">${{ product.price }}</span>
+                      }
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="flex items-center gap-2">
+                      <div class="flex items-center">
+                        @for (star of getStarArray(product.ratingsAverage); track $index) {
+                          @if (star) {
+                            <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                          } @else {
+                            <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                            </svg>
+                          }
+                        }
+                      </div>
+                      <span class="text-gray-500 text-sm">({{ product.ratingsQuantity }})</span>
+                    </div>
+
+                    <!-- Color Options (if available) -->
+                    <div class="flex gap-2 mt-3">
+                      <div class="w-5 h-5 rounded-full border-2 border-gray-300 bg-red-500 cursor-pointer"></div>
+                      <div class="w-5 h-5 rounded-full border-2 border-gray-300 bg-black cursor-pointer"></div>
+                    </div>
+                  </div>
+                </div>
+              </swiper-slide>
+            }
+          </swiper-container>
+        }
+
+        <!-- View All Products Button -->
+        <div class="flex justify-center mt-12">
+          <button 
+            (click)="viewAllProducts()"
+            class="bg-red-500 hover:bg-red-600 text-white font-semibold px-12 py-3 rounded transition-colors">
+            View All Products
+          </button>
+        </div>
+      </section>
+
+      <!-- Divider -->
+      <hr class="my-12 border-gray-200">
+
+      <!-- ========================================
+           NEW ARRIVAL SECTION
+           ======================================== -->
+      <section class="mb-12">
+        <!-- Section Header -->
+        <div class="mb-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-5 h-10 bg-red-500 rounded"></div>
+            <span class="text-red-500 font-semibold">Featured</span>
+          </div>
+          <h2 class="text-3xl font-bold text-gray-900">New Arrival</h2>
+        </div>
+
+        <!-- Featured Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Left Large Card - PlayStation 5 -->
+          <div class="relative bg-black rounded-lg overflow-hidden h-[600px] group cursor-pointer">
+            <img 
+              src="home5.png" 
+              alt="PlayStation 5"
+              class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity">
+            <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+              <h3 class="text-3xl font-bold mb-3">PlayStation 5</h3>
+              <p class="text-gray-300 mb-4 text-sm max-w-sm">
+                Black and White version of the PS5 coming out on sale.
+              </p>
+              <a href="/blank/products" class="inline-block text-white font-semibold underline hover:no-underline">
+                Shop Now
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Side - 3 Cards -->
+          <div class="grid grid-rows-2 gap-8">
+            <!-- Women's Collections -->
+            <div class="relative bg-gray-900 rounded-lg overflow-hidden h-[288px] group cursor-pointer">
+              <img 
+                src="home6.png" 
+                alt="Women's Collections"
+                class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity">
+              <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <h3 class="text-2xl font-bold mb-2">Women's Collections</h3>
+                <p class="text-gray-300 mb-3 text-sm">
+                  Featured woman collections that give you another vibe.
+                </p>
+                <a href="/blank/products" class="inline-block text-white font-semibold underline hover:no-underline">
+                  Shop Now
+                </a>
+              </div>
+            </div>
+
+            <!-- Bottom Row - Speakers & Perfume -->
+            <div class="grid grid-cols-2 gap-8">
+              <!-- Speakers Card -->
+              <div class="relative bg-black rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="home7.png" 
+                  alt="Speakers"
+                  class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity">
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 class="text-xl font-bold mb-2">Speakers</h3>
+                  <p class="text-gray-300 mb-3 text-xs">
+                    Amazon wireless speakers
+                  </p>
+                  <a href="/blank/products" class="inline-block text-white font-semibold underline hover:no-underline text-sm">
+                    Shop Now
+                  </a>
+                </div>
+              </div>
+
+              <!-- Perfume Card -->
+              <div class="relative bg-gray-900 rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="home8.png" 
+                  alt="Perfume"
+                  class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity">
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 class="text-xl font-bold mb-2">Perfume</h3>
+                  <p class="text-gray-300 mb-3 text-xs">
+                    GUCCI INTENSE OUD EDP
+                  </p>
+                  <a href="/blank/products" class="inline-block text-white font-semibold underline hover:no-underline text-sm">
+                    Shop Now
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Divider -->
+      <hr class="my-12 border-gray-200">
+
+      <!-- ========================================
+           SERVICES SECTION
+           ======================================== -->
+      <section class="mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- Free and Fast Delivery -->
+          <div class="flex flex-col items-center text-center">
+            <div class="relative mb-6">
+              <!-- Outer Circle (Light Gray) -->
+              <div class="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
+                <!-- Middle Circle (Dark Gray) -->
+                <div class="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center">
+                  <!-- Inner Circle (Black) with Icon -->
+                  <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">FREE AND FAST DELIVERY</h3>
+            <p class="text-sm text-gray-600">Free delivery for all orders over $140</p>
+          </div>
+
+          <!-- 24/7 Customer Service -->
+          <div class="flex flex-col items-center text-center">
+            <div class="relative mb-6">
+              <!-- Outer Circle (Light Gray) -->
+              <div class="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
+                <!-- Middle Circle (Dark Gray) -->
+                <div class="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center">
+                  <!-- Inner Circle (Black) with Icon -->
+                  <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">24/7 CUSTOMER SERVICE</h3>
+            <p class="text-sm text-gray-600">Friendly 24/7 customer support</p>
+          </div>
+
+          <!-- Money Back Guarantee -->
+          <div class="flex flex-col items-center text-center">
+            <div class="relative mb-6">
+              <!-- Outer Circle (Light Gray) -->
+              <div class="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
+                <!-- Middle Circle (Dark Gray) -->
+                <div class="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center">
+                  <!-- Inner Circle (Black) with Icon -->
+                  <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">MONEY BACK GUARANTEE</h3>
+            <p class="text-sm text-gray-600">We return money within 30 days</p>
+          </div>
+
+        </div>
+      </section>
+
       <!-- Future sections will go here -->
 
-    </main>
-  </div>
-</div>
+  
 
 <style>
-  .hero-swiper {
-    width: 100%;
-    height: 400px;
-  }
+.hero-swiper {
+  width: 100%;
+  max-width: 100%;
+  height: 400px;
+  display: block;
+}
 
-  .hero-swiper::part(button-prev),
-  .hero-swiper::part(button-next) {
-    color: white;
-    background: rgba(0, 0, 0, 0.5);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
+.hero-swiper::part(button-prev),
+.hero-swiper::part(button-next) {
+  color: white !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+}
 
   .hero-swiper::part(bullet) {
     background: white;
@@ -381,7 +1052,20 @@
     padding: 10px 0;
   }
 
-  /* ========================================
+/* Best Selling Swiper */
+.bestselling-swiper {
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* Explore Products Swiper */
+.explore-products-swiper,
+.explore-products-swiper-2 {
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* ========================================
    RESPONSIVE ADJUSTMENTS
    ======================================== */
 
@@ -405,4 +1089,13 @@
       font-size: 1.5rem;
     }
   }
+
 </style>
+
+<!-- Product Quick View Modal -->
+<app-product-quick-view
+  [product]="selectedProductForQuickView"
+  [isOpen]="isQuickViewOpen"
+  (close)="closeQuickView()"
+  (viewDetails)="onQuickViewDetails($event)">
+</app-product-quick-view>
