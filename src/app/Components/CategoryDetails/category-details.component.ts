@@ -7,6 +7,7 @@ import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductService } from '../../Core/services/product.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
+import { CartService } from '../../Core/services/cart.service';
 
 @Component({
   selector: 'app-category-details',
@@ -18,13 +19,15 @@ export class CategoryDetailsComponent implements OnInit {
   category$!: Observable<any>;
   categoryId!: string;
   products$!: Observable<any>;
+  addingToCartProductId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private categoryService: CategoriesService,
     private productService: ProductService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -69,6 +72,28 @@ export class CategoryDetailsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error adding to wishlist:', error);
+      },
+    });
+  }
+
+  addToCart(productId: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.addingToCartProductId === productId) {
+      return;
+    }
+
+    this.addingToCartProductId = productId;
+
+    this.cartService.addProductToCart(productId).subscribe({
+      next: (response) => {
+        this.addingToCartProductId = null;
+        console.log('Added to cart:', response);
+      },
+      error: (error) => {
+        this.addingToCartProductId = null;
+        console.error('Error adding to cart:', error);
       },
     });
   }

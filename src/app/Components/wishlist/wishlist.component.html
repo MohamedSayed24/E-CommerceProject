@@ -103,10 +103,11 @@
 
           <!-- Action Buttons -->
           <div class="flex gap-2">
-            <button (click)="addToCart(product, $event)"
-              class="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center gap-2">
+            <button (click)="addToCart(product, $event)" 
+              [disabled]="addingToCartProductId === product._id"
+              [class]="addingToCartProductId === product._id ? 'flex-1 bg-gray-400 cursor-not-allowed text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2' : 'flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center gap-2'">
               <i class="fas fa-shopping-cart"></i>
-              Add to Cart
+              {{ addingToCartProductId === product._id ? 'Adding...' : 'Add to Cart' }}
             </button>
             <a [routerLink]="['/blank/products', product._id]"
               class="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-200 flex items-center justify-center">

@@ -3,6 +3,7 @@ import { BrandService } from '../../Core/services/brand.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { WishlistService } from '../../Core/services/wishlist.service';
+import { CartService } from '../../Core/services/cart.service';
 
 @Component({
   selector: 'app-branddetails',
@@ -16,12 +17,14 @@ export class BranddetailsComponent implements OnInit {
   products: any[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
+  addingToCartProductId: string | null = null;
 
   constructor(
     private _brandsService: BrandService,
     private route: ActivatedRoute,
     private router: Router,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -70,9 +73,30 @@ export class BranddetailsComponent implements OnInit {
     });
   }
 
-  addToCart(product: any): void {
-    console.log('Adding to cart:', product);
-    // Add your cart logic here
+  addToCart(product: any, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    if (!product._id || this.addingToCartProductId === product._id) {
+      return;
+    }
+
+    this.addingToCartProductId = product._id;
+
+    this.cartService.addProductToCart(product._id).subscribe({
+      next: (response) => {
+        this.addingToCartProductId = null;
+        console.log('Added to cart:', response);
+        // You can add a toast notification here if you have one
+      },
+      error: (error) => {
+        this.addingToCartProductId = null;
+        console.error('Error adding to cart:', error);
+        // You can add an error toast notification here
+      },
+    });
   }
 
   goBack(): void {

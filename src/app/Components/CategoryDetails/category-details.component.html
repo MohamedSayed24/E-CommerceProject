@@ -121,9 +121,10 @@
 
               <!-- Action Buttons -->
               <div class="flex gap-2">
-                <button
-                  class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
-                  Add to Cart
+                <button (click)="addToCart(product._id, $event)" 
+                  [disabled]="addingToCartProductId === product._id"
+                  [class]="addingToCartProductId === product._id ? 'flex-1 bg-gray-400 cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg text-sm' : 'flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm'">
+                  {{ addingToCartProductId === product._id ? 'Adding...' : 'Add to Cart' }}
                 </button>
                 <a [routerLink]="['/blank/products', product._id]"
                   class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center justify-center">

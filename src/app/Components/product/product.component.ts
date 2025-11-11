@@ -3,6 +3,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { ProductService } from '../../Core/services/product.service';
 import { Observable } from 'rxjs';
 import { AsyncPipe, CommonModule } from '@angular/common';
+import { CartService } from '../../Core/services/cart.service';
 
 @Component({
   selector: 'app-product',
@@ -16,11 +17,14 @@ export class ProductComponent implements OnInit {
   brandId!: string | null;
   selectedImage: string = '';
   quantity: number = 1;
+  isAddingToCart: boolean = false;
+  addToCartMessage: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -49,8 +53,35 @@ export class ProductComponent implements OnInit {
   }
 
   addToCart(): void {
-    // Cart logic will be implemented later
-    console.log(`Adding ${this.quantity} items to cart`);
+    if (!this.productId || this.isAddingToCart) {
+      return;
+    }
+
+    this.isAddingToCart = true;
+    this.addToCartMessage = '';
+
+    this.cartService.addProductToCart(this.productId).subscribe({
+      next: (response) => {
+        this.isAddingToCart = false;
+        this.addToCartMessage = 'Product added to cart successfully!';
+        console.log('Added to cart:', response);
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          this.addToCartMessage = '';
+        }, 3000);
+      },
+      error: (error) => {
+        this.isAddingToCart = false;
+        this.addToCartMessage = 'Failed to add product to cart';
+        console.error('Error adding to cart:', error);
+        
+        // Clear error message after 3 seconds
+        setTimeout(() => {
+          this.addToCartMessage = '';
+        }, 3000);
+      },
+    });
   }
 
   goBack(): void {

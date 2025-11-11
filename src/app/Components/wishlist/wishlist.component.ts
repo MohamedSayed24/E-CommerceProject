@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { WishlistService } from '../../Core/services/wishlist.service';
+import { CartService } from '../../Core/services/cart.service';
 
 @Component({
   selector: 'app-wishlist',
@@ -13,8 +14,12 @@ export class WishlistComponent implements OnInit {
   wishlistProducts: any[] = [];
   isLoading: boolean = false;
   errorMessage: string = '';
+  addingToCartProductId: string | null = null;
 
-  constructor(private wishlistService: WishlistService) {}
+  constructor(
+    private wishlistService: WishlistService,
+    private cartService: CartService
+  ) {}
 
   ngOnInit(): void {
     this.loadWishlist();
@@ -53,7 +58,25 @@ export class WishlistComponent implements OnInit {
 
   addToCart(product: any, event: Event): void {
     event.preventDefault();
-    // TODO: Implement add to cart functionality
-    console.log('Add to cart:', product);
+
+    if (!product._id || this.addingToCartProductId === product._id) {
+      return;
+    }
+
+    this.addingToCartProductId = product._id;
+
+    this.cartService.addProductToCart(product._id).subscribe({
+      next: (response) => {
+        this.addingToCartProductId = null;
+        console.log('Added to cart:', response);
+        // Optionally remove from wishlist after adding to cart
+        // this.removeFromWishlist(product._id);
+      },
+      error: (error) => {
+        this.addingToCartProductId = null;
+        console.error('Error adding to cart:', error);
+        this.errorMessage = 'Failed to add item to cart. Please try again.';
+      },
+    });
   }
 }
