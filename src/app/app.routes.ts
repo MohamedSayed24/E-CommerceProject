@@ -26,6 +26,7 @@ import { AddressesComponent } from './Components/addresses/addresses.component';
 import { CheckoutComponent } from './Components/checkout/checkout.component';
 import { OrdersComponent } from './Components/orders/orders.component';
 import { ProfileComponent } from './Components/profile/profile.component';
+import { AllProductsComponent } from './Components/all-products/all-products.component';
 
 export const routes: Routes = [
   {
@@ -59,6 +60,7 @@ export const routes: Routes = [
 
       { path: 'subcategories/:id', component: SubCategoryDetailsComponent },
 
+      { path: 'products', component: AllProductsComponent },
       { path: 'products/:id', component: ProductComponent },
 
       { path: 'brands', component: BrandsComponent },
