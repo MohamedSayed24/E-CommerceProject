@@ -9,6 +9,7 @@ import { CategoriesService } from '../../Core/services/category.service';
 import { ProductService } from '../../Core/services/product.service';
 import { CartService } from '../../Core/services/cart.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
+import { ProductQuickViewComponent } from '../product-quick-view/product-quick-view.component';
 
 // Services
 
@@ -48,7 +49,7 @@ interface CountdownTime {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProductQuickViewComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './home.component.html',
 })
@@ -60,24 +61,24 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Hero Banners
   banners = [
     {
-      image: 'home1.png', // Replace with your actual banner path
+      image: 'home1.png',
       title: 'iPhone 14 Series',
       subtitle: 'Up to 10% off Voucher',
-      link: '/products',
+      link: '/blank/products',
       buttonText: 'Shop Now'
     },
     {
       image: 'home2.png',
       title: 'Summer Collection',
       subtitle: 'Up to 30% off',
-      link: '/products',
+      link: '/blank/products',
       buttonText: 'Shop Now'
     },
     {
       image: 'home4.png',
       title: 'New Arrivals',
       subtitle: 'Latest Fashion Trends',
-      link: '/products',
+      link: '/blank/products',
       buttonText: 'Explore Now'
     }
   ];
@@ -85,6 +86,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Flash Sales
   flashSaleProducts: FlashSaleProduct[] = [];
   isLoadingFlashSales = true;
+
+  // Best Selling Products
+  bestSellingProducts: FlashSaleProduct[] = [];
+  isLoadingBestSelling = true;
+
+  // Explore Our Products
+  exploreProducts: FlashSaleProduct[] = [];
+  isLoadingExploreProducts = true;
+
+  // Quick View Modal
+  isQuickViewOpen = false;
+  selectedProductForQuickView: Product | null = null;
 
   // Countdown Timer
   countdown: CountdownTime = { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -102,6 +115,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadCategories();
     this.loadFlashSaleProducts();
+    this.loadBestSellingProducts();
+    this.loadExploreProducts();
     this.initializeCountdown();
   }
 
@@ -186,6 +201,86 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   // ========================================
+  // BEST SELLING PRODUCTS
+  // ========================================
+  loadBestSellingProducts(): void {
+    this.isLoadingBestSelling = true;
+    
+    // Fetch products from both pages
+    forkJoin([
+      this.productService.getAllProducts(1),
+      this.productService.getAllProducts(2)
+    ]).pipe(
+      map(([page1, page2]: [any, any]) => {
+        // Combine all products from both pages
+        const allProducts = [...page1.data, ...page2.data];
+        
+        // Filter products that have discounts (priceAfterDiscount exists)
+        return allProducts.filter((product: Product) => product.priceAfterDiscount);
+      })
+    ).subscribe({
+      next: (discountedProducts: Product[]) => {
+        // Map products with discount percentage
+        this.bestSellingProducts = discountedProducts.map((product: Product) => {
+          const discountPercentage = product.priceAfterDiscount 
+            ? Math.round(((product.price - product.priceAfterDiscount) / product.price) * 100)
+            : 0;
+          return {
+            ...product,
+            discountPercentage
+          };
+        });
+
+        this.isLoadingBestSelling = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading best selling products:', error);
+        this.isLoadingBestSelling = false;
+      }
+    });
+  }
+
+  // ========================================
+  // EXPLORE OUR PRODUCTS
+  // ========================================
+  loadExploreProducts(): void {
+    this.isLoadingExploreProducts = true;
+    
+    // Fetch products from both pages
+    forkJoin([
+      this.productService.getAllProducts(1),
+      this.productService.getAllProducts(2)
+    ]).pipe(
+      map(([page1, page2]: [any, any]) => {
+        // Combine all products from both pages
+        return [...page1.data, ...page2.data];
+      })
+    ).subscribe({
+      next: (allProducts: Product[]) => {
+        // Shuffle the products array to get random products
+        const shuffledProducts = this.shuffleArray(allProducts);
+        
+        // Take the first 12 random products
+        this.exploreProducts = shuffledProducts.slice(0, 12).map((product: Product) => {
+          const discountPercentage = product.priceAfterDiscount 
+            ? Math.round(((product.price - product.priceAfterDiscount) / product.price) * 100)
+            : 0;
+          return {
+            ...product,
+            discountPercentage
+          };
+        });
+
+        this.isLoadingExploreProducts = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading explore products:', error);
+        this.isLoadingExploreProducts = false;
+      }
+    });
+  }
+
+  // ========================================
   // COUNTDOWN TIMER
   // ========================================
   initializeCountdown(): void {
@@ -257,6 +352,28 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   viewAllProducts(): void {
     this.router.navigate(['/blank/products']);
+  }
+
+  // ========================================
+  // QUICK VIEW MODAL
+  // ========================================
+  openQuickView(product: Product, event: Event): void {
+    event.stopPropagation();
+    this.selectedProductForQuickView = product;
+    this.isQuickViewOpen = true;
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeQuickView(): void {
+    this.isQuickViewOpen = false;
+    this.selectedProductForQuickView = null;
+    // Restore body scroll
+    document.body.style.overflow = '';
+  }
+
+  onQuickViewDetails(productId: string): void {
+    this.router.navigate(['/blank/products', productId]);
   }
 
   // Helper: Format number with leading zero
