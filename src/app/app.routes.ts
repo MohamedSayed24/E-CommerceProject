@@ -22,6 +22,10 @@ import { BranddetailsComponent } from './Components/branddetails/branddetails.co
 
 import { ProductComponent } from './Components/product/product.component';
 import { WishlistComponent } from './Components/wishlist/wishlist.component';
+import { AddressesComponent } from './Components/addresses/addresses.component';
+import { CheckoutComponent } from './Components/checkout/checkout.component';
+import { OrdersComponent } from './Components/orders/orders.component';
+import { ProfileComponent } from './Components/profile/profile.component';
 
 export const routes: Routes = [
   {
@@ -61,6 +65,10 @@ export const routes: Routes = [
       { path: 'brands/:id', component: BranddetailsComponent },
       { path: 'cart', component: CartComponent },
       { path: 'wishlist', component: WishlistComponent },
+      { path: 'addresses', component: AddressesComponent },
+      { path: 'checkout', component: CheckoutComponent },
+      { path: 'orders', component: OrdersComponent },
+      { path: 'profile', component: ProfileComponent },
     ],
     canActivate: [authGuard],
   },

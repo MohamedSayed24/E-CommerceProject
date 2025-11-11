@@ -1,0 +1,166 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">My Addresses</h1>
+        <p class="text-gray-600 mt-2">Manage your delivery addresses</p>
+      </div>
+      <button (click)="toggleAddForm()"
+        class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2">
+        <i [class]="showAddForm ? 'fas fa-times' : 'fas fa-plus'"></i>
+        {{ showAddForm ? 'Cancel' : 'Add New Address' }}
+      </button>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage"
+      class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
+      <i class="fas fa-check-circle"></i>
+      {{ successMessage }}
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage"
+      class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
+      <i class="fas fa-exclamation-circle"></i>
+      {{ errorMessage }}
+    </div>
+
+    <!-- Add Address Form -->
+    <div *ngIf="showAddForm" class="bg-white rounded-lg shadow-md p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-6">Add New Address</h2>
+      <form [formGroup]="addressForm" (ngSubmit)="onSubmitAddress()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Name <span class="text-red-500">*</span>
+            </label>
+            <input type="text" formControlName="name"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="e.g., Home, Office">
+            <div *ngIf="addressForm.get('name')?.invalid && addressForm.get('name')?.touched"
+              class="text-red-500 text-sm mt-1">
+              Name is required
+            </div>
+          </div>
+
+          <!-- City -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              City <span class="text-red-500">*</span>
+            </label>
+            <input type="text" formControlName="city"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="e.g., Cairo, Alexandria">
+            <div *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched"
+              class="text-red-500 text-sm mt-1">
+              City is required
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Phone <span class="text-red-500">*</span>
+            </label>
+            <input type="tel" formControlName="phone"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="01XXXXXXXXX">
+            <div *ngIf="addressForm.get('phone')?.invalid && addressForm.get('phone')?.touched"
+              class="text-red-500 text-sm mt-1">
+              <span *ngIf="addressForm.get('phone')?.errors?.['required']">Phone is required</span>
+              <span *ngIf="addressForm.get('phone')?.errors?.['pattern']">Invalid Egyptian phone number</span>
+            </div>
+          </div>
+
+          <!-- Details -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Address Details <span class="text-red-500">*</span>
+            </label>
+            <textarea formControlName="details" rows="3"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="Street, building number, floor, apartment..."></textarea>
+            <div *ngIf="addressForm.get('details')?.invalid && addressForm.get('details')?.touched"
+              class="text-red-500 text-sm mt-1">
+              Address details are required
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-6 flex gap-3">
+          <button type="submit" [disabled]="addressForm.invalid || isLoading"
+            class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2">
+            <i class="fas fa-save"></i>
+            {{ isLoading ? 'Saving...' : 'Save Address' }}
+          </button>
+          <button type="button" (click)="toggleAddForm()"
+            class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading && !showAddForm" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && addresses.length === 0 && !showAddForm"
+      class="text-center py-20 bg-white rounded-lg shadow-md">
+      <div class="mb-6">
+        <i class="fas fa-map-marker-alt text-gray-300 text-8xl"></i>
+      </div>
+      <h2 class="text-2xl font-semibold text-gray-700 mb-2">No addresses yet</h2>
+      <p class="text-gray-500 mb-6">Add your first delivery address to get started</p>
+      <button (click)="toggleAddForm()"
+        class="inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors">
+        <i class="fas fa-plus mr-2"></i>
+        Add Your First Address
+      </button>
+    </div>
+
+    <!-- Addresses Grid -->
+    <div *ngIf="!isLoading && addresses.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let address of addresses"
+        class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow relative">
+
+        <!-- Delete Button -->
+        <button (click)="removeAddress(address._id)"
+          class="absolute top-4 right-4 text-red-500 hover:text-red-700 transition-colors" title="Delete address">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+
+        <!-- Address Icon -->
+        <div class="flex items-start gap-4 mb-4">
+          <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
+            <i class="fas fa-map-marker-alt text-xl"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ address.name }}</h3>
+            <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">
+              {{ address.city }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Address Details -->
+        <div class="space-y-2 text-gray-600">
+          <p class="flex items-start gap-2">
+            <i class="fas fa-home mt-1 text-gray-400"></i>
+            <span>{{ address.details }}</span>
+          </p>
+          <p class="flex items-center gap-2">
+            <i class="fas fa-phone text-gray-400"></i>
+            <span>{{ address.phone }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

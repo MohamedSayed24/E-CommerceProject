@@ -11,16 +11,16 @@ function decodeJwtPayload(token: string): any | null {
     if (parts.length !== 3) {
       return null; // Not a valid JWT structure
     }
-    
+
     // Decode the payload part (which is Base64Url-encoded)
     const payload = parts[1];
-    
+
     // Convert Base64Url to regular Base64 by padding and replacing URL-safe chars
     let base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
     while (base64.length % 4) {
       base64 += '=';
     }
-    
+
     // Decode and parse the JSON payload
     return JSON.parse(atob(base64));
   } catch (e) {
@@ -28,13 +28,13 @@ function decodeJwtPayload(token: string): any | null {
   }
 }
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly API_URL = 'https://ecommerce.routemisr.com/api/v1/auth';
   private readonly TOKEN_KEY = 'authToken';
+  private readonly USER_DATA_KEY = 'userData';
   constructor(private http: HttpClient) {}
 
   // check integrity of token
@@ -63,7 +63,6 @@ export class AuthService {
     // Token is valid (well-formed and not expired)
     return true;
   }
-  
 
   //Login
   login(credentials: any): Observable<any> {
@@ -74,6 +73,10 @@ export class AuthService {
         // Assuming the backend returns the token in a 'token' property
         if (response && response.token) {
           this.storeToken(response.token);
+          // Store user data from response
+          if (response.user) {
+            this.storeUserData(response.user);
+          }
         }
       })
     );
@@ -89,17 +92,38 @@ export class AuthService {
         // Assuming the backend returns the token in a 'token' property
         if (response && response.token) {
           this.storeToken(response.token);
+          // Store user data from response
+          if (response.user) {
+            this.storeUserData(response.user);
+          }
         }
       })
     );
   }
-    
+
   private storeToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
   }
 
+  private storeUserData(userData: any): void {
+    localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(userData));
+  }
+
+  getUserData(): any {
+    const userDataStr = localStorage.getItem(this.USER_DATA_KEY);
+    if (userDataStr) {
+      try {
+        return JSON.parse(userDataStr);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_DATA_KEY);
   }
 
   isAuthenticated(): boolean {
@@ -112,26 +136,26 @@ export class AuthService {
     return false;
   }
 
-  // reset password 
+  // reset password
   forgotPassword(email: string): Observable<any> {
-  return this.http.post(`${this.API_URL}/forgotPasswords`, { email });
-}
+    return this.http.post(`${this.API_URL}/forgotPasswords`, { email });
+  }
 
-verifyResetCode(resetCode: string, email: string): Observable<any> {
-  // Corrected: Include the 'email' along with the 'resetCode' in the request body.
-  const requestBody = { 
-    email: email, 
-    resetCode: resetCode 
-  };
-  
-  // Send the complete object
-  return this.http.post(`${this.API_URL}/verifyResetCode`, requestBody);
-}
+  verifyResetCode(resetCode: string, email: string): Observable<any> {
+    // Corrected: Include the 'email' along with the 'resetCode' in the request body.
+    const requestBody = {
+      email: email,
+      resetCode: resetCode,
+    };
 
-resetPassword(email: string, newPassword: string): Observable<any> {
-    return this.http.put(`${this.API_URL}/resetPassword`, { 
-      email, 
-      newPassword 
+    // Send the complete object
+    return this.http.post(`${this.API_URL}/verifyResetCode`, requestBody);
+  }
+
+  resetPassword(email: string, newPassword: string): Observable<any> {
+    return this.http.put(`${this.API_URL}/resetPassword`, {
+      email,
+      newPassword,
     });
   }
 }
