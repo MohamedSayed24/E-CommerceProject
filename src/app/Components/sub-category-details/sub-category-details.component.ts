@@ -7,11 +7,12 @@ import { CategoriesService } from '../../Core/services/category.service';
 import { ProductService } from '../../Core/services/product.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { CartService } from '../../Core/services/cart.service';
+import { ProductCardComponent } from '../product-card/product-card.component';
 
 @Component({
   selector: 'app-sub-category-details',
   standalone: true,
-  imports: [CommonModule, AsyncPipe, RouterLink],
+  imports: [CommonModule, AsyncPipe, ProductCardComponent],
   templateUrl: './sub-category-details.component.html',
 })
 export class SubCategoryDetailsComponent implements OnInit {
@@ -73,11 +74,8 @@ export class SubCategoryDetailsComponent implements OnInit {
     );
   }
 
-  addToWishlist(productId: string, event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.wishlistService.addToWishlist({ productId }).subscribe({
+  addToWishlist(productId: string): void {
+    this.wishlistService.addToWishlist(productId).subscribe({
       next: (response) => {
         console.log('Added to wishlist:', response);
       },
@@ -87,10 +85,7 @@ export class SubCategoryDetailsComponent implements OnInit {
     });
   }
 
-  addToCart(productId: string, event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-
+  addToCart(productId: string): void {
     if (this.addingToCartProductId === productId) {
       return;
     }
@@ -107,6 +102,10 @@ export class SubCategoryDetailsComponent implements OnInit {
         console.error('Error adding to cart:', error);
       },
     });
+  }
+
+  viewProductDetails(productId: string): void {
+    this.router.navigate(['/blank/products', productId]);
   }
 
   goBack(): void {

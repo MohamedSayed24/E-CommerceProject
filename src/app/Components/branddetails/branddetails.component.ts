@@ -4,11 +4,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { CartService } from '../../Core/services/cart.service';
+import { ProductCardComponent } from '../product-card/product-card.component';
 
 @Component({
   selector: 'app-branddetails',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ProductCardComponent],
   templateUrl: './branddetails.component.html',
 })
 export class BranddetailsComponent implements OnInit {
@@ -59,11 +60,8 @@ export class BranddetailsComponent implements OnInit {
     });
   }
 
-  addToWishlist(productId: string, event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.wishlistService.addToWishlist({ productId }).subscribe({
+  addToWishlist(productId: string): void {
+    this.wishlistService.addToWishlist(productId).subscribe({
       next: (response) => {
         console.log('Added to wishlist:', response);
       },
@@ -73,30 +71,27 @@ export class BranddetailsComponent implements OnInit {
     });
   }
 
-  addToCart(product: any, event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    if (!product._id || this.addingToCartProductId === product._id) {
+  addToCart(productId: string): void {
+    if (this.addingToCartProductId === productId) {
       return;
     }
 
-    this.addingToCartProductId = product._id;
+    this.addingToCartProductId = productId;
 
-    this.cartService.addProductToCart(product._id).subscribe({
+    this.cartService.addProductToCart(productId).subscribe({
       next: (response) => {
         this.addingToCartProductId = null;
         console.log('Added to cart:', response);
-        // You can add a toast notification here if you have one
       },
       error: (error) => {
         this.addingToCartProductId = null;
         console.error('Error adding to cart:', error);
-        // You can add an error toast notification here
       },
     });
+  }
+
+  viewProductDetails(productId: string): void {
+    this.router.navigate(['/blank/products', productId]);
   }
 
   goBack(): void {
