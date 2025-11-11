@@ -1,35 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { AddressService } from '../../Core/services/address.service';
-import { OrderService } from '../../Core/services/order.service';
-import { CartService } from '../../Core/services/cart.service';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AddressService } from '../../Core/services/address.service';
+import { CartService } from '../../Core/services/cart.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './checkout.component.html',
 })
 export class CheckoutComponent implements OnInit {
   addresses: any[] = [];
+  selectedAddress: any = null;
   selectedAddressId: string = '';
-  isLoading: boolean = false;
+  cartData: any = null;
+  isLoading: boolean = true;
+  isProcessingPayment: boolean = false;
+  isProcessingOrder: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
-  showAddressSelection: boolean = true;
-
-  cartData: any = null;
-  cartId: string = '';
-  isProcessingOrder: boolean = false;
-  paymentMethod: 'cash' | 'online' = 'cash';
+  paymentMethod: 'cash' | 'card' | 'online' = 'cash';
 
   constructor(
     private addressService: AddressService,
-    private orderService: OrderService,
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -39,23 +38,20 @@ export class CheckoutComponent implements OnInit {
 
   loadAddresses(): void {
     this.isLoading = true;
-    this.errorMessage = '';
-
     this.addressService.getLoggedUserAddresses().subscribe({
       next: (response) => {
         this.addresses = response.data || [];
-        this.isLoading = false;
-
-        // Auto-select first address if available
         if (this.addresses.length > 0) {
+          this.selectedAddress = this.addresses[0];
           this.selectedAddressId = this.addresses[0]._id;
         }
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading addresses:', error);
-        this.errorMessage = 'Failed to load addresses. Please try again.';
+        this.errorMessage = 'Failed to load addresses';
         this.isLoading = false;
-      },
+      }
     });
   }
 
@@ -63,105 +59,93 @@ export class CheckoutComponent implements OnInit {
     this.cartService.getLoggedUserCart().subscribe({
       next: (response) => {
         this.cartData = response.data;
-        this.cartId = response.data._id;
       },
       error: (error) => {
         console.error('Error loading cart:', error);
-      },
+        this.errorMessage = 'Failed to load cart';
+      }
     });
   }
 
-  selectAddress(addressId: string): void {
-    this.selectedAddressId = addressId;
+  selectAddress(address: any): void {
+    this.selectedAddress = address;
+    this.selectedAddressId = address._id;
+    this.clearMessages();
   }
 
   selectPaymentMethod(method: 'cash' | 'online'): void {
-    this.paymentMethod = method;
-  }
-
-  getSelectedAddress(): any {
-    return this.addresses.find((addr) => addr._id === this.selectedAddressId);
-  }
-
-  proceedToPayment(): void {
-    if (!this.selectedAddressId) {
-      this.errorMessage = 'Please select a delivery address';
-      return;
-    }
-
-    if (!this.cartId) {
-      this.errorMessage = 'Cart not found. Please add items to cart first.';
-      return;
-    }
-
-    const selectedAddress = this.getSelectedAddress();
-    if (!selectedAddress) {
-      this.errorMessage = 'Selected address not found';
-      return;
-    }
-
-    // Prepare shipping address object
-    const shippingAddress = {
-      details: selectedAddress.details,
-      phone: selectedAddress.phone,
-      city: selectedAddress.city,
-    };
-
-    this.isProcessingOrder = true;
-    this.errorMessage = '';
-
-    if (this.paymentMethod === 'cash') {
-      this.createCashOrder(shippingAddress);
-    } else {
-      this.createCheckoutSession(shippingAddress);
-    }
-  }
-
-  createCashOrder(shippingAddress: any): void {
-    this.orderService.createCashOrder(this.cartId, shippingAddress).subscribe({
-      next: (response) => {
-        console.log('Cash order created:', response);
-        this.successMessage = 'Order placed successfully!';
-        this.isProcessingOrder = false;
-
-        // Redirect to orders page or success page after 2 seconds
-        setTimeout(() => {
-          this.router.navigate(['/blank/orders']);
-        }, 2000);
-      },
-      error: (error) => {
-        console.error('Error creating cash order:', error);
-        this.errorMessage =
-          error.error?.message || 'Failed to place order. Please try again.';
-        this.isProcessingOrder = false;
-      },
-    });
-  }
-
-  createCheckoutSession(shippingAddress: any): void {
-    this.orderService.checkoutSession(this.cartId, shippingAddress).subscribe({
-      next: (response) => {
-        console.log('Checkout session created:', response);
-
-        // Redirect to payment gateway
-        if (response.session && response.session.url) {
-          window.location.href = response.session.url;
-        } else {
-          this.errorMessage = 'Payment session URL not found';
-          this.isProcessingOrder = false;
-        }
-      },
-      error: (error) => {
-        console.error('Error creating checkout session:', error);
-        this.errorMessage =
-          error.error?.message ||
-          'Failed to initiate payment. Please try again.';
-        this.isProcessingOrder = false;
-      },
-    });
+    this.paymentMethod = method as any;
+    this.clearMessages();
   }
 
   goToAddresses(): void {
     this.router.navigate(['/blank/addresses']);
+  }
+
+  proceedToPayment(): void {
+    this.checkout();
+  }
+
+  checkout(): void {
+    if (!this.selectedAddress || !this.selectedAddressId) {
+      this.errorMessage = 'Please select a delivery address';
+      return;
+    }
+
+    if (!this.cartData || !this.cartData._id) {
+      this.errorMessage = 'Cart is empty';
+      return;
+    }
+
+    this.isProcessingPayment = true;
+    this.isProcessingOrder = true;
+    this.clearMessages();
+
+    const url = this.paymentMethod === 'cash' 
+      ? `https://ecommerce.routemisr.com/api/v1/orders/${this.cartData._id}`
+      : `https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${this.cartData._id}?url=http://localhost:4200`;
+
+    const orderData = {
+      shippingAddress: {
+        details: this.selectedAddress.details,
+        phone: this.selectedAddress.phone,
+        city: this.selectedAddress.city
+      }
+    };
+
+    this.http.post(url, orderData).subscribe({
+      next: (response: any) => {
+        this.isProcessingPayment = false;
+        this.isProcessingOrder = false;
+        if (this.paymentMethod === 'cash') {
+          this.successMessage = 'Order placed successfully!';
+          this.cartService.refreshCart();
+          setTimeout(() => {
+            this.router.navigate(['/blank/orders']);
+          }, 2000);
+        } else {
+          // Redirect to Stripe payment page
+          if (response.session && response.session.url) {
+            window.location.href = response.session.url;
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error processing checkout:', error);
+        this.errorMessage = 'Failed to process order. Please try again.';
+        this.isProcessingPayment = false;
+        this.isProcessingOrder = false;
+      }
+    });
+  }
+
+  clearMessages(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  getTotalItems(): number {
+    if (!this.cartData || !this.cartData.products) return 0;
+    return this.cartData.products.reduce((sum: number, item: any) => sum + item.count, 0);
   }
 }

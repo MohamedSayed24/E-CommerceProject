@@ -3,7 +3,7 @@
 
   <!-- Brand Header -->
   @if (brand) {
-  <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+  <div class="bg-gradient-to-r from-red-500 to-red-600 text-white">
     <div class="container mx-auto px-6 py-8">
       <!-- Back Button -->
       <button (click)="goBack()"
@@ -23,7 +23,7 @@
           <h1 class="text-4xl md:text-5xl font-bold mb-3">
             {{ brand.name }}
           </h1>
-          <p class="text-indigo-100 text-lg">{{ products.length }} Products Available</p>
+          <p class="text-red-100 text-lg">{{ products.length }} Products Available</p>
         </div>
       </div>
     </div>
@@ -38,7 +38,7 @@
     @if (isLoading) {
     <div class="flex items-center justify-center min-h-[400px]">
       <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-500 mx-auto mb-4"></div>
         <p class="text-gray-500">Loading products...</p>
       </div>
     </div>
@@ -55,13 +55,10 @@
     @if (!isLoading && products.length > 0) {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       @for (product of products; track product._id) {
-        <app-product-card
-          [product]="product"
-          [isAddingToCart]="addingToCartProductId === product._id"
-          (addToCartClick)="addToCart($event)"
-          (addToWishlistClick)="addToWishlist($event)"
-          (viewDetailsClick)="viewProductDetails($event)">
-        </app-product-card>
+      <app-product-card [product]="product" [isAddingToCart]="addingToCartProductId === product._id"
+        (addToCartClick)="addToCart($event)" (addToWishlistClick)="addToWishlist($event)"
+        (viewDetailsClick)="viewProductDetails($event)">
+      </app-product-card>
       }
     </div>
     }
@@ -78,7 +75,7 @@
         There are currently no products available for this brand. Please check back later or browse other brands.
       </p>
       <button (click)="goBack()"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+        class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-6 rounded-lg transition-colors">
         Browse Other Brands
       </button>
     </div>

@@ -1,47 +1,106 @@
 <!-- brands.component.html -->
-<div class="container mx-auto px-4 py-8">
-  <!-- Page Title -->
-  <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Our Brands</h1>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
+  <div class="container mx-auto max-w-7xl">
 
-  <!-- Loading State -->
-  @if (isLoading) {
+    <!-- Page Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-5 h-10 bg-red-500 rounded"></div>
+        <h3 class="text-red-500 font-semibold">Brands</h3>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900">Browse By Brand</h1>
+      <p class="text-gray-600 mt-2">
+        @if (!isLoading && brands.length > 0) {
+        <span>Showing {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage * itemsPerPage,
+          brands.length) }} of {{ brands.length }} brands</span>
+        } @else {
+        <span>Discover our wide selection of trusted brands</span>
+        }
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
     <div class="flex justify-center items-center min-h-[400px]">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-500 mx-auto mb-4"></div>
+        <p class="text-gray-500">Loading brands...</p>
+      </div>
     </div>
-  }
+    }
 
-  <!-- Error Message -->
-  @if (errorMessage && !isLoading) {
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-      {{ errorMessage }}
+    <!-- Error Message -->
+    @if (errorMessage && !isLoading) {
+    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+      <p class="text-red-600 text-sm font-medium">{{ errorMessage }}</p>
     </div>
-  }
+    }
 
-  <!-- Brands Grid -->
-  @if (!isLoading && brands.length > 0) {
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-      @for (brand of brands; track brand._id) {
-        <div (click)="viewBrandProducts(brand._id)"
-             class="bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300 cursor-pointer p-4 flex flex-col items-center justify-center group">
-          
-          <!-- Brand Image -->
-          <div class="w-full aspect-square flex items-center justify-center mb-3">
-            <img [src]="brand.image" 
-                 [alt]="brand.name" 
-                 class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300">
-          </div>
-          
-          <!-- Brand Name -->
-          <h3 class="text-sm font-semibold text-gray-700 text-center">
-            {{ brand.name }}
-          </h3>
+    <!-- Brands Grid -->
+    @if (!isLoading && brands.length > 0) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 mb-8">
+      @for (brand of paginatedBrands; track brand._id) {
+      <div (click)="viewBrandProducts(brand._id)"
+        class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer p-6 flex flex-col items-center justify-center group border-2 border-gray-200 hover:border-red-500">
+
+        <!-- Brand Image -->
+        <div class="w-full aspect-square flex items-center justify-center mb-3">
+          <img [src]="brand.image" [alt]="brand.name" [title]="brand.name" alt="Brand logo"
+            class="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300">
         </div>
-      } @empty {
-        <!-- No Brands Message -->
-        <div class="col-span-full text-center text-gray-500 py-12">
-          No brands available at the moment.
-        </div>
+
+        <!-- Brand Name -->
+        <h3
+          class="text-sm font-semibold text-gray-700 group-hover:text-red-500 text-center transition-colors duration-300">
+          {{ brand.name }}
+        </h3>
+      </div>
       }
     </div>
-  }
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+    <div class="flex justify-center items-center gap-2 mb-8">
+      <!-- Previous Button -->
+      <button (click)="previousPage()" [disabled]="currentPage === 1" title="Previous page"
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-red-50 hover:border-red-500 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <!-- Page Numbers -->
+      @for (page of pageNumbers; track page) {
+      <button (click)="goToPage(page)" [title]="'Go to page ' + page"
+        [class]="page === currentPage ? 'px-4 py-2 rounded-lg bg-red-500 text-white font-semibold shadow-md' : 'px-4 py-2 rounded-lg border border-gray-300 hover:bg-red-50 hover:border-red-500 hover:text-red-500 transition-colors'">
+        {{ page }}
+      </button>
+      }
+
+      <!-- Next Button -->
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages" title="Next page"
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-red-50 hover:border-red-500 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+    }
+    }
+
+    <!-- No Brands -->
+    @if (!isLoading && brands.length === 0 && !errorMessage) {
+    <div class="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-lg p-8 shadow-md">
+      <svg class="w-24 h-24 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+      </svg>
+      <h3 class="text-2xl font-semibold text-gray-700 mb-2">No Brands Found</h3>
+      <p class="text-gray-500 text-center max-w-md">
+        There are currently no brands available. Please check back later.
+      </p>
+    </div>
+    }
+
+  </div>
 </div>

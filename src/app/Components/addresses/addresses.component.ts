@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AddressService } from '../../Core/services/address.service';
 
 @Component({
@@ -16,31 +11,33 @@ import { AddressService } from '../../Core/services/address.service';
 })
 export class AddressesComponent implements OnInit {
   addresses: any[] = [];
-  isLoading: boolean = false;
-  errorMessage: string = '';
-  successMessage: string = '';
+  isLoading: boolean = true;
   showAddForm: boolean = false;
+  successMessage: string = '';
+  errorMessage: string = '';
+  addressForm!: FormGroup;
 
-  addressForm: FormGroup = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    details: new FormControl('', [Validators.required]),
-    phone: new FormControl('', [
-      Validators.required,
-      Validators.pattern(/^01[0125][0-9]{8}$/),
-    ]),
-    city: new FormControl('', [Validators.required]),
-  });
-
-  constructor(private addressService: AddressService) {}
+  constructor(
+    private addressService: AddressService,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
+    this.initForm();
     this.loadAddresses();
+  }
+
+  initForm(): void {
+    this.addressForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      details: ['', [Validators.required, Validators.minLength(10)]],
+      phone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
+      city: ['', [Validators.required, Validators.minLength(3)]]
+    });
   }
 
   loadAddresses(): void {
     this.isLoading = true;
-    this.errorMessage = '';
-
     this.addressService.getLoggedUserAddresses().subscribe({
       next: (response) => {
         this.addresses = response.data || [];
@@ -48,9 +45,9 @@ export class AddressesComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading addresses:', error);
-        this.errorMessage = 'Failed to load addresses. Please try again.';
+        this.errorMessage = 'Failed to load addresses';
         this.isLoading = false;
-      },
+      }
     });
   }
 
@@ -58,59 +55,53 @@ export class AddressesComponent implements OnInit {
     this.showAddForm = !this.showAddForm;
     if (!this.showAddForm) {
       this.addressForm.reset();
-      this.errorMessage = '';
-      this.successMessage = '';
     }
+    this.clearMessages();
   }
 
   onSubmitAddress(): void {
-    if (this.addressForm.valid) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
-      this.addressService.addAddress(this.addressForm.value).subscribe({
-        next: (response) => {
-          console.log('Address added:', response);
-          this.successMessage = 'Address added successfully!';
-          this.addressForm.reset();
-          this.showAddForm = false;
-          this.loadAddresses(); // Reload addresses
-          this.isLoading = false;
-
-          // Clear success message after 3 seconds
-          setTimeout(() => {
-            this.successMessage = '';
-          }, 3000);
-        },
-        error: (error) => {
-          console.error('Error adding address:', error);
-          this.errorMessage =
-            error.error?.message || 'Failed to add address. Please try again.';
-          this.isLoading = false;
-        },
-      });
+    if (this.addressForm.invalid) {
+      this.addressForm.markAllAsTouched();
+      return;
     }
+
+    this.addressService.addAddress(this.addressForm.value).subscribe({
+      next: (response) => {
+        this.successMessage = 'Address added successfully!';
+        this.loadAddresses();
+        this.addressForm.reset();
+        this.showAddForm = false;
+        setTimeout(() => this.clearMessages(), 3000);
+      },
+      error: (error) => {
+        console.error('Error adding address:', error);
+        this.errorMessage = 'Failed to add address. Please try again.';
+        setTimeout(() => this.clearMessages(), 3000);
+      }
+    });
   }
 
   removeAddress(addressId: string): void {
-    if (confirm('Are you sure you want to delete this address?')) {
-      this.addressService.removeAddress(addressId).subscribe({
-        next: (response) => {
-          console.log('Address removed:', response);
-          this.successMessage = 'Address removed successfully!';
-          this.loadAddresses(); // Reload addresses
-
-          // Clear success message after 3 seconds
-          setTimeout(() => {
-            this.successMessage = '';
-          }, 3000);
-        },
-        error: (error) => {
-          console.error('Error removing address:', error);
-          this.errorMessage = 'Failed to remove address. Please try again.';
-        },
-      });
+    if (!confirm('Are you sure you want to delete this address?')) {
+      return;
     }
+
+    this.addressService.removeAddress(addressId).subscribe({
+      next: (response) => {
+        this.successMessage = 'Address deleted successfully!';
+        this.loadAddresses();
+        setTimeout(() => this.clearMessages(), 3000);
+      },
+      error: (error) => {
+        console.error('Error deleting address:', error);
+        this.errorMessage = 'Failed to delete address. Please try again.';
+        setTimeout(() => this.clearMessages(), 3000);
+      }
+    });
+  }
+
+  clearMessages(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
   }
 }

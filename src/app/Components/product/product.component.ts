@@ -65,7 +65,7 @@ export class ProductComponent implements OnInit {
         this.isAddingToCart = false;
         this.addToCartMessage = 'Product added to cart successfully!';
         console.log('Added to cart:', response);
-        
+
         // Clear success message after 3 seconds
         setTimeout(() => {
           this.addToCartMessage = '';
@@ -75,7 +75,7 @@ export class ProductComponent implements OnInit {
         this.isAddingToCart = false;
         this.addToCartMessage = 'Failed to add product to cart';
         console.error('Error adding to cart:', error);
-        
+
         // Clear error message after 3 seconds
         setTimeout(() => {
           this.addToCartMessage = '';
