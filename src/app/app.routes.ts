@@ -22,6 +22,7 @@ import { BranddetailsComponent } from './Components/branddetails/branddetails.co
 
 import { ProductComponent } from './Components/product/product.component';
 import { WishlistComponent } from './Components/wishlist/wishlist.component';
+import { AllProductsComponent } from './Components/all-products/all-products.component';
 
 export const routes: Routes = [
   {
@@ -55,6 +56,7 @@ export const routes: Routes = [
 
       { path: 'subcategories/:id', component: SubCategoryDetailsComponent },
 
+      { path: 'products', component: AllProductsComponent },
       { path: 'products/:id', component: ProductComponent },
 
       { path: 'brands', component: BrandsComponent },

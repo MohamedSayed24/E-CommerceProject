@@ -13,8 +13,8 @@ export class WishlistService {
 
   constructor(private http: HttpClient) {}
 
-  addToWishlist(data: object): Observable<any> {
-    return this.http.post(`${this.API_URL}`, data).pipe(
+  addToWishlist(productId: string): Observable<any> {
+    return this.http.post(`${this.API_URL}`, { productId }).pipe(
       tap((response: any) => {
         if (response.data) {
           this.wishlistCountSubject.next(response.data.length);
