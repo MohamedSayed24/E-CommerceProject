@@ -8,30 +8,7 @@ import { ProductCardComponent } from '../product-card/product-card.component';
 import { forkJoin, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ToastService } from '../../Core/services/toast.service';
-
-interface Product {
-  _id: string;
-  title: string;
-  price: number;
-  priceAfterDiscount?: number;
-  imageCover: string;
-  ratingsAverage: number;
-  ratingsQuantity: number;
-  category: {
-    _id: string;
-    name: string;
-  };
-  brand?: {
-    _id: string;
-    name: string;
-  };
-  subcategory?: Array<{
-    _id: string;
-    name: string;
-  }>;
-  description?: string;
-  quantity: number;
-}
+import { IProduct } from '../../Core/Interfaces/iproduct';
 
 @Component({
   selector: 'app-all-products',
@@ -40,7 +17,7 @@ interface Product {
   templateUrl: './all-products.component.html',
 })
 export class AllProductsComponent implements OnInit, OnDestroy {
-  products: Product[] = [];
+  products: IProduct[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
   addingToCartProductId: string | null = null;
@@ -81,7 +58,7 @@ export class AllProductsComponent implements OnInit, OnDestroy {
 
     // Fetch products from both pages
     this.getAllProductsSubscription = forkJoin([
-     this.productService.getAllProducts(1),
+      this.productService.getAllProducts(1),
       this.productService.getAllProducts(2),
     ])
       .pipe(
@@ -107,7 +84,7 @@ export class AllProductsComponent implements OnInit, OnDestroy {
   /**
    * Get paginated products for current page
    */
-  get paginatedProducts(): Product[] {
+  get paginatedProducts(): IProduct[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.products.slice(startIndex, endIndex);

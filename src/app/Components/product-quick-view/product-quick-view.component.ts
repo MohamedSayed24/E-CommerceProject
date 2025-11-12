@@ -3,32 +3,17 @@ import { CommonModule } from '@angular/common';
 import { CartService } from '../../Core/services/cart.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { ToastService } from '../../Core/services/toast.service';
-
-interface Product {
-  _id: string;
-  title: string;
-  description?: string;
-  price: number;
-  priceAfterDiscount?: number;
-  imageCover: string;
-  images?: string[];
-  ratingsAverage: number;
-  ratingsQuantity: number;
-  category?: { name: string };
-  brand?: { name: string };
-  quantity?: number;
-  sold?: number;
-}
+import { IProduct } from '../../Core/Interfaces/iproduct';
 
 @Component({
   selector: 'app-product-quick-view',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './product-quick-view.component.html',
-  styleUrls: ['./product-quick-view.component.css']
+  styleUrls: ['./product-quick-view.component.css'],
 })
 export class ProductQuickViewComponent implements OnInit {
-  @Input() product: Product | null = null;
+  @Input() product: IProduct | null = null;
   @Input() isOpen = false;
   @Output() close = new EventEmitter<void>();
   @Output() viewDetails = new EventEmitter<string>();
@@ -72,7 +57,11 @@ export class ProductQuickViewComponent implements OnInit {
   }
 
   incrementQuantity(): void {
-    if (this.product && this.product.quantity && this.quantity < this.product.quantity) {
+    if (
+      this.product &&
+      this.product.quantity &&
+      this.quantity < this.product.quantity
+    ) {
       this.quantity++;
     } else {
       this.quantity++;
@@ -87,7 +76,7 @@ export class ProductQuickViewComponent implements OnInit {
 
   addToCart(): void {
     if (!this.product) return;
-    
+
     this.isAddingToCart = true;
     this.cartService.addProductToCart(this.product._id).subscribe({
       next: () => {
@@ -98,13 +87,13 @@ export class ProductQuickViewComponent implements OnInit {
         this.isAddingToCart = false;
         console.error('Error adding to cart:', error);
         this.toastService.error('Failed to add to cart');
-      }
+      },
     });
   }
 
   addToWishlist(): void {
     if (!this.product) return;
-    
+
     this.isAddingToWishlist = true;
     this.wishlistService.addToWishlist(this.product._id).subscribe({
       next: () => {
@@ -115,7 +104,7 @@ export class ProductQuickViewComponent implements OnInit {
         this.isAddingToWishlist = false;
         console.error('Error adding to wishlist:', error);
         this.toastService.error('Failed to add to wishlist');
-      }
+      },
     });
   }
 
@@ -127,12 +116,18 @@ export class ProductQuickViewComponent implements OnInit {
   }
 
   getStarArray(rating: number): boolean[] {
-    return Array(5).fill(false).map((_, index) => index < Math.round(rating));
+    return Array(5)
+      .fill(false)
+      .map((_, index) => index < Math.round(rating));
   }
 
   getDiscountPercentage(): number {
     if (this.product?.priceAfterDiscount) {
-      return Math.round(((this.product.price - this.product.priceAfterDiscount) / this.product.price) * 100);
+      return Math.round(
+        ((this.product.price - this.product.priceAfterDiscount) /
+          this.product.price) *
+          100
+      );
     }
     return 0;
   }

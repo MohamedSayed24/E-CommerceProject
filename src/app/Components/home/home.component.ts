@@ -1,5 +1,10 @@
 // home.component.ts
-import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  CUSTOM_ELEMENTS_SCHEMA,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { register } from 'swiper/element/bundle';
@@ -11,41 +16,13 @@ import { CartService } from '../../Core/services/cart.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { ProductQuickViewComponent } from '../product-quick-view/product-quick-view.component';
 import { ToastService } from '../../Core/services/toast.service';
-
-// Services
-
+import { ICategory } from '../../Core/Interfaces/icategory';
+import { IProduct } from '../../Core/Interfaces/iproduct';
+import { IFlashSaleProduct } from '../../Core/Interfaces/iflash-sale-product';
+import { ICountdownTime } from '../../Core/Interfaces/icountdown-time';
 
 // Register Swiper
 register();
-
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-  image?: string;
-}
-
-interface Product {
-  _id: string;
-  title: string;
-  price: number;
-  priceAfterDiscount?: number;
-  imageCover: string;
-  ratingsAverage: number;
-  ratingsQuantity: number;
-  sold?: number;
-}
-
-interface FlashSaleProduct extends Product {
-  discountPercentage: number;
-}
-
-interface CountdownTime {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
 
 @Component({
   selector: 'app-home',
@@ -56,7 +33,7 @@ interface CountdownTime {
 })
 export class HomeComponent implements OnInit, OnDestroy {
   // Categories for Sidenav
-  categories: Category[] = [];
+  categories: ICategory[] = [];
   isLoadingCategories = true;
 
   // Hero Banners
@@ -66,42 +43,42 @@ export class HomeComponent implements OnInit, OnDestroy {
       title: 'iPhone 14 Series',
       subtitle: 'Up to 10% off Voucher',
       link: '/blank/products',
-      buttonText: 'Shop Now'
+      buttonText: 'Shop Now',
     },
     {
       image: 'home2.png',
       title: 'Summer Collection',
       subtitle: 'Up to 30% off',
       link: '/blank/products',
-      buttonText: 'Shop Now'
+      buttonText: 'Shop Now',
     },
     {
       image: 'home4.png',
       title: 'New Arrivals',
       subtitle: 'Latest Fashion Trends',
       link: '/blank/products',
-      buttonText: 'Explore Now'
-    }
+      buttonText: 'Explore Now',
+    },
   ];
 
   // Flash Sales
-  flashSaleProducts: FlashSaleProduct[] = [];
+  flashSaleProducts: IFlashSaleProduct[] = [];
   isLoadingFlashSales = true;
 
   // Best Selling Products
-  bestSellingProducts: FlashSaleProduct[] = [];
+  bestSellingProducts: IFlashSaleProduct[] = [];
   isLoadingBestSelling = true;
 
   // Explore Our Products
-  exploreProducts: FlashSaleProduct[] = [];
+  exploreProducts: IFlashSaleProduct[] = [];
   isLoadingExploreProducts = true;
 
   // Quick View Modal
   isQuickViewOpen = false;
-  selectedProductForQuickView: Product | null = null;
+  selectedProductForQuickView: IProduct | null = null;
 
   // Countdown Timer
-  countdown: CountdownTime = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  countdown: ICountdownTime = { days: 0, hours: 0, minutes: 0, seconds: 0 };
   private countdownSubscription?: Subscription;
   private flashSaleEndTime!: Date;
 
@@ -143,16 +120,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ========================================
   loadCategories(): void {
     this.isLoadingCategories = true;
-    this.loadCategoriesSubscription = this.categoryService.getAllCategories().subscribe({
-      next: (response) => {
-        this.categories = response.data;
-        this.isLoadingCategories = false;
-      },
-      error: (error) => {
-        console.error('Error loading categories:', error);
-        this.isLoadingCategories = false;
-      }
-    });
+    this.loadCategoriesSubscription = this.categoryService
+      .getAllCategories()
+      .subscribe({
+        next: (response) => {
+          this.categories = response.data;
+          this.isLoadingCategories = false;
+        },
+        error: (error) => {
+          console.error('Error loading categories:', error);
+          this.isLoadingCategories = false;
+        },
+      });
   }
 
   navigateToCategory(categoryId: string): void {
@@ -164,40 +143,48 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ========================================
   loadFlashSaleProducts(): void {
     this.isLoadingFlashSales = true;
-    
+
     // Fetch products from both pages to get all products
     this.loadFlashSaleProductsSubscription = forkJoin([
       this.productService.getAllProducts(1),
-      this.productService.getAllProducts(2)
-    ]).pipe(
-      map(([page1, page2]: [any, any]) => {
-        // Combine all products from both pages
-        return [...page1.data, ...page2.data];
-      })
-    ).subscribe({
-      next: (allProducts: Product[]) => {
-        // Shuffle the products array to get random products
-        const shuffledProducts = this.shuffleArray(allProducts);
-        
-        // Take the first 12-15 random products
-        this.flashSaleProducts = shuffledProducts.slice(0, 15).map((product: Product) => {
-          // Calculate discount percentage if exists
-          const discountPercentage = product.priceAfterDiscount 
-            ? Math.round(((product.price - product.priceAfterDiscount) / product.price) * 100)
-            : 0;
-          return {
-            ...product,
-            discountPercentage
-          };
-        });
+      this.productService.getAllProducts(2),
+    ])
+      .pipe(
+        map(([page1, page2]: [any, any]) => {
+          // Combine all products from both pages
+          return [...page1.data, ...page2.data];
+        })
+      )
+      .subscribe({
+        next: (allProducts: IProduct[]) => {
+          // Shuffle the products array to get random products
+          const shuffledProducts = this.shuffleArray(allProducts);
 
-        this.isLoadingFlashSales = false;
-      },
-      error: (error: any) => {
-        console.error('Error loading products:', error);
-        this.isLoadingFlashSales = false;
-      }
-    });
+          // Take the first 12-15 random products
+          this.flashSaleProducts = shuffledProducts
+            .slice(0, 15)
+            .map((product: IProduct) => {
+              // Calculate discount percentage if exists
+              const discountPercentage = product.priceAfterDiscount
+                ? Math.round(
+                    ((product.price - product.priceAfterDiscount) /
+                      product.price) *
+                      100
+                  )
+                : 0;
+              return {
+                ...product,
+                discountPercentage,
+              };
+            });
+
+          this.isLoadingFlashSales = false;
+        },
+        error: (error: any) => {
+          console.error('Error loading products:', error);
+          this.isLoadingFlashSales = false;
+        },
+      });
   }
 
   /**
@@ -217,39 +204,49 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ========================================
   loadBestSellingProducts(): void {
     this.isLoadingBestSelling = true;
-    
+
     // Fetch products from both pages
     this.loadBestSellingProductsSubscription = forkJoin([
       this.productService.getAllProducts(1),
-      this.productService.getAllProducts(2)
-    ]).pipe(
-      map(([page1, page2]: [any, any]) => {
-        // Combine all products from both pages
-        const allProducts = [...page1.data, ...page2.data];
-        
-        // Filter products that have discounts (priceAfterDiscount exists)
-        return allProducts.filter((product: Product) => product.priceAfterDiscount);
-      })
-    ).subscribe({
-      next: (discountedProducts: Product[]) => {
-        // Map products with discount percentage
-        this.bestSellingProducts = discountedProducts.map((product: Product) => {
-          const discountPercentage = product.priceAfterDiscount 
-            ? Math.round(((product.price - product.priceAfterDiscount) / product.price) * 100)
-            : 0;
-          return {
-            ...product,
-            discountPercentage
-          };
-        });
+      this.productService.getAllProducts(2),
+    ])
+      .pipe(
+        map(([page1, page2]: [any, any]) => {
+          // Combine all products from both pages
+          const allProducts = [...page1.data, ...page2.data];
 
-        this.isLoadingBestSelling = false;
-      },
-      error: (error: any) => {
-        console.error('Error loading best selling products:', error);
-        this.isLoadingBestSelling = false;
-      }
-    });
+          // Filter products that have discounts (priceAfterDiscount exists)
+          return allProducts.filter(
+            (product: IProduct) => product.priceAfterDiscount
+          );
+        })
+      )
+      .subscribe({
+        next: (discountedProducts: IProduct[]) => {
+          // Map products with discount percentage
+          this.bestSellingProducts = discountedProducts.map(
+            (product: IProduct) => {
+              const discountPercentage = product.priceAfterDiscount
+                ? Math.round(
+                    ((product.price - product.priceAfterDiscount) /
+                      product.price) *
+                      100
+                  )
+                : 0;
+              return {
+                ...product,
+                discountPercentage,
+              };
+            }
+          );
+
+          this.isLoadingBestSelling = false;
+        },
+        error: (error: any) => {
+          console.error('Error loading best selling products:', error);
+          this.isLoadingBestSelling = false;
+        },
+      });
   }
 
   // ========================================
@@ -257,39 +254,47 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ========================================
   loadExploreProducts(): void {
     this.isLoadingExploreProducts = true;
-    
+
     // Fetch products from both pages
     this.loadExploreProductsSubscription = forkJoin([
       this.productService.getAllProducts(1),
-      this.productService.getAllProducts(2)
-    ]).pipe(
-      map(([page1, page2]: [any, any]) => {
-        // Combine all products from both pages
-        return [...page1.data, ...page2.data];
-      })
-    ).subscribe({
-      next: (allProducts: Product[]) => {
-        // Shuffle the products array to get random products
-        const shuffledProducts = this.shuffleArray(allProducts);
-        
-        // Take the first 12 random products
-        this.exploreProducts = shuffledProducts.slice(0, 12).map((product: Product) => {
-          const discountPercentage = product.priceAfterDiscount 
-            ? Math.round(((product.price - product.priceAfterDiscount) / product.price) * 100)
-            : 0;
-          return {
-            ...product,
-            discountPercentage
-          };
-        });
+      this.productService.getAllProducts(2),
+    ])
+      .pipe(
+        map(([page1, page2]: [any, any]) => {
+          // Combine all products from both pages
+          return [...page1.data, ...page2.data];
+        })
+      )
+      .subscribe({
+        next: (allProducts: IProduct[]) => {
+          // Shuffle the products array to get random products
+          const shuffledProducts = this.shuffleArray(allProducts);
 
-        this.isLoadingExploreProducts = false;
-      },
-      error: (error: any) => {
-        console.error('Error loading explore products:', error);
-        this.isLoadingExploreProducts = false;
-      }
-    });
+          // Take the first 12 random products
+          this.exploreProducts = shuffledProducts
+            .slice(0, 12)
+            .map((product: IProduct) => {
+              const discountPercentage = product.priceAfterDiscount
+                ? Math.round(
+                    ((product.price - product.priceAfterDiscount) /
+                      product.price) *
+                      100
+                  )
+                : 0;
+              return {
+                ...product,
+                discountPercentage,
+              };
+            });
+
+          this.isLoadingExploreProducts = false;
+        },
+        error: (error: any) => {
+          console.error('Error loading explore products:', error);
+          this.isLoadingExploreProducts = false;
+        },
+      });
   }
 
   // ========================================
@@ -325,7 +330,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       days: Math.floor(distance / (1000 * 60 * 60 * 24)),
       hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
       minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      seconds: Math.floor((distance % (1000 * 60)) / 1000),
     };
   }
 
@@ -341,7 +346,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error adding to cart:', error);
         this.toastService.error('Failed to add to cart');
-      }
+      },
     });
   }
 
@@ -354,7 +359,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error adding to wishlist:', error);
         this.toastService.error('Failed to add to wishlist');
-      }
+      },
     });
   }
 
@@ -369,7 +374,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ========================================
   // QUICK VIEW MODAL
   // ========================================
-  openQuickView(product: Product, event: Event): void {
+  openQuickView(product: IProduct, event: Event): void {
     event.stopPropagation();
     this.selectedProductForQuickView = product;
     this.isQuickViewOpen = true;
@@ -395,6 +400,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Helper: Generate star array for ratings
   getStarArray(rating: number): boolean[] {
-    return Array(5).fill(false).map((_, index) => index < Math.round(rating));
+    return Array(5)
+      .fill(false)
+      .map((_, index) => index < Math.round(rating));
   }
 }

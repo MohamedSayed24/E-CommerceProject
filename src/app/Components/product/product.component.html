@@ -165,7 +165,7 @@
 
           <!-- Add to Cart Button -->
           <button (click)="addToCart()" [disabled]="isAddingToCart"
-            [class]="isAddingToCart ? 'w-full bg-gray-400 cursor-not-allowed text-white font-semibold py-4 px-6 rounded-lg flex items-center justify-center space-x-2 shadow-lg' : 'w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl'">
+            [class]="isAddingToCart ? 'w-full bg-gray-400 cursor-not-allowed text-white font-semibold py-4 px-6 rounded-lg flex items-center justify-center space-x-2 shadow-lg' : 'w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl'">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -183,7 +183,7 @@
         </div>
         }
 
-  
+
       </div>
     </div>
   </div>
@@ -198,44 +198,36 @@
 
   <!-- Related Products Section -->
   @if (relatedProducts.length > 0) {
-    <div class="mt-16">
-      <div class="flex items-center gap-3 mb-8">
-        <div class="w-5 h-10 bg-red-500 rounded"></div>
-        <h2 class="text-3xl font-bold text-gray-900">Related Products</h2>
-      </div>
-
-      @if (isLoadingRelatedProducts) {
-        <div class="flex justify-center items-center py-20">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
-        </div>
-      } @else {
-        <swiper-container
-          class="related-products-swiper"
-          slides-per-view="1"
-          space-between="30"
-          autoplay-delay="3000"
-          autoplay-disable-on-interaction="false"
-          loop="true"
-          breakpoints='{"640": {"slidesPerView": 2, "spaceBetween": 24}, "768": {"slidesPerView": 3, "spaceBetween": 28}, "1024": {"slidesPerView": 4, "spaceBetween": 30}}'>
-          @for (product of relatedProducts; track product._id) {
-            <swiper-slide>
-              <app-product-card
-                [product]="product"
-                (addToCartClick)="addToCart($event)"
-                (addToWishlistClick)="addToWishlist($event)"
-                (viewDetailsClick)="viewProductDetails($event)">
-              </app-product-card>
-            </swiper-slide>
-          }
-        </swiper-container>
-      }
+  <div class="mt-16">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="w-5 h-10 bg-red-500 rounded"></div>
+      <h2 class="text-3xl font-bold text-gray-900">Related Products</h2>
     </div>
+
+    @if (isLoadingRelatedProducts) {
+    <div class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+    </div>
+    } @else {
+    <swiper-container class="related-products-swiper" slides-per-view="1" space-between="30" autoplay-delay="3000"
+      autoplay-disable-on-interaction="false" loop="true"
+      breakpoints='{"640": {"slidesPerView": 2, "spaceBetween": 24}, "768": {"slidesPerView": 3, "spaceBetween": 28}, "1024": {"slidesPerView": 4, "spaceBetween": 30}}'>
+      @for (product of relatedProducts; track product._id) {
+      <swiper-slide>
+        <app-product-card [product]="product" (addToCartClick)="addToCart($event)"
+          (addToWishlistClick)="addToWishlist($event)" (viewDetailsClick)="viewProductDetails($event)">
+        </app-product-card>
+      </swiper-slide>
+      }
+    </swiper-container>
+    }
+  </div>
   }
 </div>
 
 <style>
-.related-products-swiper {
-  width: 100%;
-  padding: 10px 0;
-}
+  .related-products-swiper {
+    width: 100%;
+    padding: 10px 0;
+  }
 </style>

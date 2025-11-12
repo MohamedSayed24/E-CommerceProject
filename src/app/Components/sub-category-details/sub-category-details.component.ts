@@ -8,6 +8,7 @@ import { ProductService } from '../../Core/services/product.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { CartService } from '../../Core/services/cart.service';
 import { ProductCardComponent } from '../product-card/product-card.component';
+import { ToastService } from '../../Core/services/toast.service';
 
 @Component({
   selector: 'app-sub-category-details',
@@ -27,7 +28,8 @@ export class SubCategoryDetailsComponent implements OnInit {
     private categoryService: CategoriesService,
     private productService: ProductService,
     private wishlistService: WishlistService,
-    private cartService: CartService
+    private cartService: CartService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -77,9 +79,11 @@ export class SubCategoryDetailsComponent implements OnInit {
   addToWishlist(productId: string): void {
     this.wishlistService.addToWishlist(productId).subscribe({
       next: (response) => {
+        this.toastService.success('Added to wishlist!');
         console.log('Added to wishlist:', response);
       },
       error: (error) => {
+        this.toastService.error('Failed to add to wishlist');
         console.error('Error adding to wishlist:', error);
       },
     });
@@ -95,10 +99,12 @@ export class SubCategoryDetailsComponent implements OnInit {
     this.cartService.addProductToCart(productId).subscribe({
       next: (response) => {
         this.addingToCartProductId = null;
+        this.toastService.success('Product added to cart!');
         console.log('Added to cart:', response);
       },
       error: (error) => {
         this.addingToCartProductId = null;
+        this.toastService.error('Failed to add to cart');
         console.error('Error adding to cart:', error);
       },
     });

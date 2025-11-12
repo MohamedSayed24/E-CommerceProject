@@ -1,30 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
-interface Product {
-  _id: string;
-  title: string;
-  price: number;
-  priceAfterDiscount?: number;
-  imageCover: string;
-  ratingsAverage?: number;
-  ratingsQuantity?: number;
-  category?: {
-    _id: string;
-    name: string;
-  };
-  brand?: {
-    _id: string;
-    name: string;
-  };
-  subcategory?: Array<{
-    _id: string;
-    name: string;
-  }>;
-  description?: string;
-  quantity?: number;
-}
+import { IProduct } from '../../Core/Interfaces/iproduct';
 
 @Component({
   selector: 'app-product-card',
@@ -33,7 +10,7 @@ interface Product {
   templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
-  @Input() product!: Product;
+  @Input() product!: IProduct;
   @Input() isAddingToCart: boolean = false;
 
   @Output() addToCartClick = new EventEmitter<string>();
@@ -64,9 +41,19 @@ export class ProductCardComponent {
   /**
    * Get category badge color based on category name
    */
-  getCategoryBadgeColor(categoryName: string): 'red' | 'blue' | 'purple' | 'pink' | 'yellow' | 'green' | 'indigo' | 'gray' {
+  getCategoryBadgeColor(
+    categoryName: string
+  ):
+    | 'red'
+    | 'blue'
+    | 'purple'
+    | 'pink'
+    | 'yellow'
+    | 'green'
+    | 'indigo'
+    | 'gray' {
     const lowerCaseName = categoryName.toLowerCase();
-    
+
     if (lowerCaseName.includes('women')) return 'red';
     if (lowerCaseName.includes('men')) return 'blue';
     if (lowerCaseName.includes('electronics')) return 'purple';
@@ -80,9 +67,19 @@ export class ProductCardComponent {
   /**
    * Get subcategory badge color (complementary to category)
    */
-  getSubcategoryBadgeColor(categoryName: string): 'red' | 'blue' | 'purple' | 'pink' | 'yellow' | 'green' | 'indigo' | 'gray' {
+  getSubcategoryBadgeColor(
+    categoryName: string
+  ):
+    | 'red'
+    | 'blue'
+    | 'purple'
+    | 'pink'
+    | 'yellow'
+    | 'green'
+    | 'indigo'
+    | 'gray' {
     const lowerCaseName = categoryName.toLowerCase();
-    
+
     if (lowerCaseName.includes('women')) return 'pink';
     if (lowerCaseName.includes('men')) return 'indigo';
     if (lowerCaseName.includes('electronics')) return 'blue';

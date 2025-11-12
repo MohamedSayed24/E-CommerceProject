@@ -50,21 +50,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   loadAddresses(): void {
     this.isLoading = true;
-    this.loadAddressesSubscription = this.addressService.getLoggedUserAddresses().subscribe({
-      next: (response) => {
-        this.addresses = response.data || [];
-        if (this.addresses.length > 0) {
-          this.selectedAddress = this.addresses[0];
-          this.selectedAddressId = this.addresses[0]._id;
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading addresses:', error);
-        this.errorMessage = 'Failed to load addresses';
-        this.isLoading = false;
-      }
-    });
+    this.loadAddressesSubscription = this.addressService
+      .getLoggedUserAddresses()
+      .subscribe({
+        next: (response) => {
+          this.addresses = response.data || [];
+          if (this.addresses.length > 0) {
+            this.selectedAddress = this.addresses[0];
+            this.selectedAddressId = this.addresses[0]._id;
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading addresses:', error);
+          this.errorMessage = 'Failed to load addresses';
+          this.isLoading = false;
+        },
+      });
   }
 
   loadCart(): void {
@@ -75,7 +77,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error loading cart:', error);
         this.errorMessage = 'Failed to load cart';
-      }
+      },
     });
   }
 
@@ -113,16 +115,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.isProcessingOrder = true;
     this.clearMessages();
 
-    const url = this.paymentMethod === 'cash' 
-      ? `https://ecommerce.routemisr.com/api/v1/orders/${this.cartData._id}`
-      : `https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${this.cartData._id}?url=http://localhost:4200`;
+    const url =
+      this.paymentMethod === 'cash'
+        ? `https://ecommerce.routemisr.com/api/v1/orders/${this.cartData._id}`
+        : `https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${this.cartData._id}?url=http://localhost:4200/blank`;
 
     const orderData = {
       shippingAddress: {
         details: this.selectedAddress.details,
         phone: this.selectedAddress.phone,
-        city: this.selectedAddress.city
-      }
+        city: this.selectedAddress.city,
+      },
     };
 
     this.checkoutSubscription = this.http.post(url, orderData).subscribe({
@@ -147,7 +150,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.errorMessage = 'Failed to process order. Please try again.';
         this.isProcessingPayment = false;
         this.isProcessingOrder = false;
-      }
+      },
     });
   }
 
@@ -158,6 +161,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   getTotalItems(): number {
     if (!this.cartData || !this.cartData.products) return 0;
-    return this.cartData.products.reduce((sum: number, item: any) => sum + item.count, 0);
+    return this.cartData.products.reduce(
+      (sum: number, item: any) => sum + item.count,
+      0
+    );
   }
 }

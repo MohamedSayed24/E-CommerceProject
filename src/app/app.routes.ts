@@ -71,6 +71,7 @@ export const routes: Routes = [
       { path: 'addresses', component: AddressesComponent },
       { path: 'checkout', component: CheckoutComponent },
       { path: 'orders', component: OrdersComponent },
+      { path: 'allorders', redirectTo: 'orders', pathMatch: 'full' },
       { path: 'profile', component: ProfileComponent },
     ],
     canActivate: [authGuard],

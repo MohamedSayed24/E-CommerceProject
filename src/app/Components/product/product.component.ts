@@ -1,4 +1,9 @@
-import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  CUSTOM_ELEMENTS_SCHEMA,
+} from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { ProductService } from '../../Core/services/product.service';
 import { Observable, Subscription } from 'rxjs';
@@ -8,20 +13,10 @@ import { WishlistService } from '../../Core/services/wishlist.service';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { register } from 'swiper/element/bundle';
 import { ToastService } from '../../Core/services/toast.service';
+import { IProduct } from '../../Core/Interfaces/iproduct';
 
 // Register Swiper
 register();
-
-interface Product {
-  _id: string;
-  title: string;
-  price: number;
-  priceAfterDiscount?: number;
-  imageCover: string;
-  ratingsAverage: number;
-  ratingsQuantity: number;
-  category: { _id: string; name: string };
-}
 
 @Component({
   selector: 'app-product',
@@ -38,9 +33,9 @@ export class ProductComponent implements OnInit, OnDestroy {
   quantity: number = 1;
   isAddingToCart: boolean = false;
   addToCartMessage: string = '';
-  
+
   // Related Products
-  relatedProducts: Product[] = [];
+  relatedProducts: IProduct[] = [];
   isLoadingRelatedProducts: boolean = false;
 
   // Subscriptions for cleanup
@@ -60,7 +55,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.productId = this.route.snapshot.paramMap.get('id') || '';
     if (this.productId) {
       this.product$ = this.productService.getProductById(this.productId);
-      
+
       // Load related products
       this.loadRelatedProducts();
     }
@@ -74,38 +69,43 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.loadRelatedProductsSubscription?.unsubscribe();
     this.loadRelatedProductsCategorySubscription?.unsubscribe();
   }
-  
+
   loadRelatedProducts(): void {
     this.isLoadingRelatedProducts = true;
-    
+
     // First get the current product to get its category
-    this.loadRelatedProductsCategorySubscription = this.productService.getProductById(this.productId).subscribe({
-      next: (productData) => {
-        const categoryId = productData.data.category._id;
-        
-        // Get all products from the same category
-        this.loadRelatedProductsSubscription = this.productService.getAllProducts(1).subscribe({
-          next: (response) => {
-            // Filter products from same category, exclude current product, take first 8
-            this.relatedProducts = response.data
-              .filter((p: Product) => 
-                p.category._id === categoryId && p._id !== this.productId
-              )
-              .slice(0, 8);
-            
-            this.isLoadingRelatedProducts = false;
-          },
-          error: (error) => {
-            console.error('Error loading related products:', error);
-            this.isLoadingRelatedProducts = false;
-          }
-        });
-      },
-      error: (error) => {
-        console.error('Error loading product category:', error);
-        this.isLoadingRelatedProducts = false;
-      }
-    });
+    this.loadRelatedProductsCategorySubscription = this.productService
+      .getProductById(this.productId)
+      .subscribe({
+        next: (productData) => {
+          const categoryId = productData.data.category._id;
+
+          // Get all products from the same category
+          this.loadRelatedProductsSubscription = this.productService
+            .getAllProducts(1)
+            .subscribe({
+              next: (response) => {
+                // Filter products from same category, exclude current product, take first 8
+                this.relatedProducts = response.data
+                  .filter(
+                    (p: IProduct) =>
+                      p.category._id === categoryId && p._id !== this.productId
+                  )
+                  .slice(0, 8);
+
+                this.isLoadingRelatedProducts = false;
+              },
+              error: (error) => {
+                console.error('Error loading related products:', error);
+                this.isLoadingRelatedProducts = false;
+              },
+            });
+        },
+        error: (error) => {
+          console.error('Error loading product category:', error);
+          this.isLoadingRelatedProducts = false;
+        },
+      });
   }
 
   selectImage(image: string): void {
@@ -160,13 +160,11 @@ export class ProductComponent implements OnInit, OnDestroy {
   goBack(): void {
     this.router.navigate(['/blank/categories']);
   }
-  
+
   viewProductDetails(productId: string): void {
     this.router.navigate(['/blank/products', productId]).then(() => {
       // Reload component when navigating to another product
       window.location.reload();
     });
   }
-  
-
 }
