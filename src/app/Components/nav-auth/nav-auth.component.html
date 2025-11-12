@@ -1,24 +1,88 @@
 
 
-    <nav class="flex justify-between items-center p-4 bg-white shadow-md px-8">
+<nav class="bg-white shadow-md">
+  <div class="flex justify-between items-center p-4 px-4 lg:px-8">
+    <!-- Logo -->
+    <div class="flex-shrink-0">
+      <a routerLink="login" class="text-2xl font-bold tracking-wider text-black">Exclusive</a>
+    </div>
 
-        <a routerLink="login" class="text-2xl font-bold tracking-wider text-black">Exclusive</a>
-        <div class="md:flex items-center gap-12">
-            <div class="flex gap-12 items-center">
-                <a routerLink="register" routerLinkActive="border-b-2 border-[#DB4444] " class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1 ">Sign Up</a>
-                <a routerLink="login" routerLinkActive="border-b-2 border-[#DB4444] " class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Login</a>
-            </div>
-            
-            <div class="relative flex items-center">
-                <input 
-                    class="w-60 placeholder-gray-400 text-sm px-4 py-2 pr-10 bg-gray-50 border-0 rounded text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400" 
-                    type="search" 
-                    placeholder="What are you looking for?"
-                />
-                <i class="fas fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"></i>
-            </div>
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex items-center gap-8 lg:gap-12">
+      <div class="flex gap-8 lg:gap-12 items-center">
+        <a routerLink="register" routerLinkActive="border-b-2 border-[#DB4444]"
+          class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Sign Up</a>
+        <a routerLink="login" routerLinkActive="border-b-2 border-[#DB4444]"
+          class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Login</a>
+      </div>
+
+      <div class="relative flex items-center">
+        <input
+          class="w-48 lg:w-60 placeholder-gray-400 text-sm px-4 py-2 pr-10 bg-gray-50 border-0 rounded text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
+          type="search" placeholder="What are you looking for?" />
+        <i class="fas fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"></i>
+      </div>
+    </div>
+
+    <!-- Mobile Hamburger Button -->
+    <div class="md:hidden">
+      <button (click)="toggleMobileMenu()" class="text-gray-700 hover:text-red-500 focus:outline-none p-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          @if (!isMobileMenuOpen) {
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          } @else {
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          }
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  @if (isMobileMenuOpen) {
+    <div class="md:hidden bg-white border-t border-gray-200 animate-slide-down">
+      <div class="px-4 py-4 space-y-4">
+        <!-- Search Bar -->
+        <div class="relative flex items-center">
+          <input
+            class="w-full placeholder-gray-400 text-sm px-4 py-2 pr-10 bg-gray-50 border-0 rounded text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
+            type="search" placeholder="What are you looking for?" />
+          <i class="fas fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"></i>
         </div>
-    </nav>
 
+        <!-- Navigation Links -->
+        <div class="space-y-2 pt-2 border-t border-gray-200">
+          <a routerLink="register" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
+            class="block py-3 text-base text-gray-700 hover:text-red-500 transition-colors">
+            <i class="fas fa-user-plus w-5 mr-3"></i>Sign Up
+          </a>
+          <a routerLink="login" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
+            class="block py-3 text-base text-gray-700 hover:text-red-500 transition-colors">
+            <i class="fas fa-sign-in-alt w-5 mr-3"></i>Login
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+</nav>
 
+<style>
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      max-height: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      max-height: 500px;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out forwards;
+  }
+</style>
 

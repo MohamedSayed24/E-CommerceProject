@@ -1,20 +1,22 @@
-<nav class="flex justify-between items-center p-4 bg-white shadow-md px-8">
-  <div>
-    <a routerLink="login" class="text-2xl font-bold tracking-wider text-black">Exclusive</a>
-  </div>
-  <div class="md:flex items-center gap-12">
-    <div class="flex gap-12 items-center">
-      <a routerLink="home" routerLinkActive="border-b-2 border-[#DB4444] "
-        class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1 ">Home</a>
-      <a routerLink="categories" routerLinkActive="border-b-2 border-[#DB4444] "
+<nav class="bg-white shadow-md">
+  <div class="flex justify-between items-center p-4 px-4 lg:px-8">
+    <!-- Logo -->
+    <div class="flex-shrink-0">
+      <a routerLink="home" class="text-2xl font-bold tracking-wider text-black">Exclusive</a>
+    </div>
+
+    <!-- Desktop Navigation Links -->
+    <div class="hidden md:flex items-center gap-8 lg:gap-12">
+      <a routerLink="home" routerLinkActive="border-b-2 border-[#DB4444]"
+        class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Home</a>
+      <a routerLink="categories" routerLinkActive="border-b-2 border-[#DB4444]"
         class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Categories</a>
-      <a routerLink="brands" routerLinkActive="border-b-2 border-[#DB4444] "
+      <a routerLink="brands" routerLinkActive="border-b-2 border-[#DB4444]"
         class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Brands</a>
     </div>
 
-  </div>
-  <div class="flex justify-between items-center gap-3">
-    <div class="flex items-center gap-4">
+    <!-- Desktop Icons -->
+    <div class="hidden md:flex items-center gap-4">
       <a routerLink="wishlist" class="relative text-gray-700 hover:text-red-500 transition-colors duration-200">
         <i class="fa-solid fa-heart text-xl"></i>
         @if (wishlistCount > 0) {
@@ -41,7 +43,6 @@
         <!-- Dropdown Menu -->
         @if (isProfileDropdownOpen) {
           <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 animate-fade-in">
-
             <!-- User Info -->
             <div class="px-4 py-3 border-b border-gray-200">
               <p class="text-sm font-semibold text-gray-900">{{ userName }}</p>
@@ -87,7 +88,101 @@
         }
       </div>
     </div>
+
+    <!-- Mobile Icons and Hamburger -->
+    <div class="flex md:hidden items-center gap-3">
+      <a routerLink="wishlist" class="relative text-gray-700 hover:text-red-500 transition-colors duration-200">
+        <i class="fa-solid fa-heart text-xl"></i>
+        @if (wishlistCount > 0) {
+          <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            {{ wishlistCount }}
+          </span>
+        }
+      </a>
+      <a routerLink="cart" class="text-gray-700 hover:text-red-500 transition-colors duration-200">
+        <i class="fa-solid fa-cart-shopping text-xl"></i>
+      </a>
+
+      <!-- Hamburger Button -->
+      <button (click)="toggleMobileMenu()" class="text-gray-700 hover:text-red-500 focus:outline-none p-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          @if (!isMobileMenuOpen) {
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          } @else {
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          }
+        </svg>
+      </button>
+    </div>
   </div>
+
+  <!-- Mobile Menu -->
+  @if (isMobileMenuOpen) {
+    <div class="md:hidden bg-white border-t border-gray-200 animate-slide-down">
+      <div class="px-4 py-3 space-y-3">
+        <!-- User Info -->
+        <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
+          <div
+            class="w-10 h-10 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center text-white font-semibold">
+            {{ userName.charAt(0).toUpperCase() || 'U' }}
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-gray-900">{{ userName }}</p>
+            <p class="text-xs text-gray-500">Welcome back!</p>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <a routerLink="home" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
+          class="block py-2 text-base text-gray-700 hover:text-red-500 transition-colors">
+          <i class="fas fa-home w-5 mr-3"></i>Home
+        </a>
+        <a routerLink="categories" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
+          class="block py-2 text-base text-gray-700 hover:text-red-500 transition-colors">
+          <i class="fas fa-th-large w-5 mr-3"></i>Categories
+        </a>
+        <a routerLink="brands" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
+          class="block py-2 text-base text-gray-700 hover:text-red-500 transition-colors">
+          <i class="fas fa-tags w-5 mr-3"></i>Brands
+        </a>
+
+        <div class="border-t border-gray-200 pt-3 mt-3 space-y-2">
+          <button (click)="navigateToProfile()"
+            class="w-full text-left py-2 text-sm text-gray-700 hover:text-red-500 transition-colors flex items-center gap-3">
+            <i class="fas fa-user w-5"></i>
+            <span>My Profile</span>
+          </button>
+
+          <button (click)="navigateToOrders()"
+            class="w-full text-left py-2 text-sm text-gray-700 hover:text-red-500 transition-colors flex items-center gap-3">
+            <i class="fas fa-shopping-bag w-5"></i>
+            <span>My Orders</span>
+          </button>
+
+          <button (click)="navigateToAddresses()"
+            class="w-full text-left py-2 text-sm text-gray-700 hover:text-red-500 transition-colors flex items-center gap-3">
+            <i class="fas fa-map-marker-alt w-5"></i>
+            <span>My Addresses</span>
+          </button>
+
+          <a routerLink="wishlist" (click)="closeMobileMenu()"
+            class="block py-2 text-sm text-gray-700 hover:text-red-500 transition-colors flex items-center gap-3">
+            <i class="fas fa-heart w-5"></i>
+            <span>My Wishlist</span>
+          </a>
+        </div>
+
+        <!-- Sign Out -->
+        <div class="border-t border-gray-200 pt-3 mt-3">
+          <button (click)="SignOut()"
+            class="w-full text-left py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3 rounded">
+            <i class="fas fa-sign-out-alt w-5"></i>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </nav>
 
 <style>
@@ -103,8 +198,26 @@
     }
   }
 
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      max-height: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      max-height: 1000px;
+      transform: translateY(0);
+    }
+  }
+
   .animate-fade-in {
     animation: fade-in 0.2s ease-out forwards;
+  }
+
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out forwards;
   }
 
   .rotate-180 {

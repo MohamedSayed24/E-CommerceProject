@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class NavBlankComponent implements OnInit, OnDestroy {
   wishlistCount: number = 0;
   isProfileDropdownOpen: boolean = false;
+  isMobileMenuOpen: boolean = false;
   userName: string = '';
 
   // Subscriptions for cleanup
@@ -91,8 +92,16 @@ export class NavBlankComponent implements OnInit, OnDestroy {
     this.isProfileDropdownOpen = !this.isProfileDropdownOpen;
   }
 
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
   closeProfileDropdown(): void {
     this.isProfileDropdownOpen = false;
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
   }
 
   // Close dropdown when clicking outside
@@ -107,21 +116,25 @@ export class NavBlankComponent implements OnInit, OnDestroy {
 
   navigateToProfile(): void {
     this.closeProfileDropdown();
+    this.closeMobileMenu();
     this.router.navigate(['/blank/profile']);
   }
 
   navigateToOrders(): void {
     this.closeProfileDropdown();
+    this.closeMobileMenu();
     this.router.navigate(['/blank/orders']);
   }
 
   navigateToAddresses(): void {
     this.closeProfileDropdown();
+    this.closeMobileMenu();
     this.router.navigate(['/blank/addresses']);
   }
 
   SignOut(): void {
     this.closeProfileDropdown();
+    this.closeMobileMenu();
     this.authService.logout();
     this.router.navigate(['/login']);
   }
