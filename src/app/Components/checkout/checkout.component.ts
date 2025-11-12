@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AddressService } from '../../Core/services/address.service';
 import { CartService } from '../../Core/services/cart.service';
 import { HttpClient } from '@angular/common/http';
@@ -12,7 +13,7 @@ import { HttpClient } from '@angular/common/http';
   imports: [CommonModule, FormsModule],
   templateUrl: './checkout.component.html',
 })
-export class CheckoutComponent implements OnInit {
+export class CheckoutComponent implements OnInit, OnDestroy {
   addresses: any[] = [];
   selectedAddress: any = null;
   selectedAddressId: string = '';
@@ -23,6 +24,11 @@ export class CheckoutComponent implements OnInit {
   errorMessage: string = '';
   successMessage: string = '';
   paymentMethod: 'cash' | 'card' | 'online' = 'cash';
+
+  // Subscriptions for cleanup
+  private loadAddressesSubscription!: Subscription;
+  private loadCartSubscription!: Subscription;
+  private checkoutSubscription!: Subscription;
 
   constructor(
     private addressService: AddressService,
@@ -36,9 +42,15 @@ export class CheckoutComponent implements OnInit {
     this.loadCart();
   }
 
+  ngOnDestroy(): void {
+    this.loadAddressesSubscription?.unsubscribe();
+    this.loadCartSubscription?.unsubscribe();
+    this.checkoutSubscription?.unsubscribe();
+  }
+
   loadAddresses(): void {
     this.isLoading = true;
-    this.addressService.getLoggedUserAddresses().subscribe({
+    this.loadAddressesSubscription = this.addressService.getLoggedUserAddresses().subscribe({
       next: (response) => {
         this.addresses = response.data || [];
         if (this.addresses.length > 0) {
@@ -56,7 +68,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   loadCart(): void {
-    this.cartService.getLoggedUserCart().subscribe({
+    this.loadCartSubscription = this.cartService.getLoggedUserCart().subscribe({
       next: (response) => {
         this.cartData = response.data;
       },
@@ -113,7 +125,7 @@ export class CheckoutComponent implements OnInit {
       }
     };
 
-    this.http.post(url, orderData).subscribe({
+    this.checkoutSubscription = this.http.post(url, orderData).subscribe({
       next: (response: any) => {
         this.isProcessingPayment = false;
         this.isProcessingOrder = false;

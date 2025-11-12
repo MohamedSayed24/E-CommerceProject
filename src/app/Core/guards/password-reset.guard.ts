@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { PasswordResetService } from '../Core/services/passwordreset.service';
+import { PasswordResetService } from '../services/passwordreset.service';
 
 @Injectable({
   providedIn: 'root',

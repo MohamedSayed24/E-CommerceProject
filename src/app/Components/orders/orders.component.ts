@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { OrderService } from '../../Core/services/order.service';
 import { AuthService } from '../../Core/services/auth.service';
 
@@ -10,11 +11,14 @@ import { AuthService } from '../../Core/services/auth.service';
   imports: [CommonModule, RouterLink],
   templateUrl: './orders.component.html',
 })
-export class OrdersComponent implements OnInit {
+export class OrdersComponent implements OnInit, OnDestroy {
   orders: any[] = [];
   isLoading: boolean = false;
   errorMessage: string = '';
   userId: string = '';
+
+  // Subscriptions for cleanup
+  private loadOrdersSubscription!: Subscription;
 
   constructor(
     private orderService: OrderService,
@@ -23,6 +27,10 @@ export class OrdersComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUserIdAndLoadOrders();
+  }
+
+  ngOnDestroy(): void {
+    this.loadOrdersSubscription?.unsubscribe();
   }
 
   getUserIdAndLoadOrders(): void {
@@ -60,7 +68,7 @@ export class OrdersComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.orderService.getUserOrders(this.userId).subscribe({
+    this.loadOrdersSubscription = this.orderService.getUserOrders(this.userId).subscribe({
       next: (response) => {
         // The API returns orders directly in the response array
         this.orders = response || [];

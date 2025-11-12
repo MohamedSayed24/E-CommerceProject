@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../Core/services/product.service';
 import { CartService } from '../../Core/services/cart.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { ProductCardComponent } from '../product-card/product-card.component';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ToastService } from '../../Core/services/toast.service';
 
 interface Product {
   _id: string;
@@ -38,7 +39,7 @@ interface Product {
   imports: [CommonModule, ProductCardComponent],
   templateUrl: './all-products.component.html',
 })
-export class AllProductsComponent implements OnInit {
+export class AllProductsComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
@@ -52,15 +53,23 @@ export class AllProductsComponent implements OnInit {
   // Math for template
   Math = Math;
 
+  // Subscriptions for cleanup
+  private getAllProductsSubscription!: Subscription;
+
   constructor(
     private productService: ProductService,
     private cartService: CartService,
     private wishlistService: WishlistService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
     this.loadAllProducts();
+  }
+
+  ngOnDestroy(): void {
+    this.getAllProductsSubscription?.unsubscribe();
   }
 
   /**
@@ -71,8 +80,8 @@ export class AllProductsComponent implements OnInit {
     this.errorMessage = '';
 
     // Fetch products from both pages
-    forkJoin([
-      this.productService.getAllProducts(1),
+    this.getAllProductsSubscription = forkJoin([
+     this.productService.getAllProducts(1),
       this.productService.getAllProducts(2),
     ])
       .pipe(
@@ -154,10 +163,12 @@ export class AllProductsComponent implements OnInit {
     this.cartService.addProductToCart(productId).subscribe({
       next: (response) => {
         this.addingToCartProductId = null;
+        this.toastService.success('Product added to cart!');
         console.log('Added to cart:', response);
       },
       error: (error) => {
         this.addingToCartProductId = null;
+        this.toastService.error('Failed to add to cart');
         console.error('Error adding to cart:', error);
       },
     });
@@ -169,9 +180,11 @@ export class AllProductsComponent implements OnInit {
   addToWishlist(productId: string): void {
     this.wishlistService.addToWishlist(productId).subscribe({
       next: (response) => {
+        this.toastService.success('Added to wishlist!');
         console.log('Added to wishlist:', response);
       },
       error: (error) => {
+        this.toastService.error('Failed to add to wishlist');
         console.error('Error adding to wishlist:', error);
       },
     });

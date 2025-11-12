@@ -1,6 +1,7 @@
 import { AuthService } from '../../Core/services/auth.service';
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { CommonModule } from '@angular/common';
 
@@ -10,10 +11,14 @@ import { CommonModule } from '@angular/common';
   imports: [RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './nav-blank.component.html',
 })
-export class NavBlankComponent implements OnInit {
+export class NavBlankComponent implements OnInit, OnDestroy {
   wishlistCount: number = 0;
   isProfileDropdownOpen: boolean = false;
   userName: string = '';
+
+  // Subscriptions for cleanup
+  private wishlistCountSubscription!: Subscription;
+  private loadWishlistSubscription!: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -23,18 +28,23 @@ export class NavBlankComponent implements OnInit {
 
   ngOnInit(): void {
     // Subscribe to wishlist count changes
-    this.wishlistService.wishlistCount$.subscribe((count) => {
+    this.wishlistCountSubscription = this.wishlistService.wishlistCount$.subscribe((count) => {
       this.wishlistCount = count;
     });
 
     // Load initial wishlist count
-    this.wishlistService.getUserWishlist().subscribe({
+    this.loadWishlistSubscription = this.wishlistService.getUserWishlist().subscribe({
       next: () => {},
       error: () => {},
     });
 
     // Get user name from localStorage or token
     this.getUserName();
+  }
+
+  ngOnDestroy(): void {
+    this.wishlistCountSubscription?.unsubscribe();
+    this.loadWishlistSubscription?.unsubscribe();
   }
 
   getUserName(): void {

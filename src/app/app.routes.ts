@@ -11,10 +11,10 @@ import { CategoriesComponent } from './Components/categories/categories.componen
 
 import { BrandsComponent } from './Components/brands/brands.component';
 import { CartComponent } from './Components/cart/cart.component';
-import { authGuard } from './auth/auth-guard.guard';
+
 import { VerifyCodeComponent } from './Components/verify-code/verify-code.component';
 import { ResetPasswordComponent } from './Components/reset-password/reset-password.component';
-import { PasswordResetGuard } from './guards/password-reset.guard';
+import { PasswordResetGuard } from './Core/guards/password-reset.guard';
 
 import { CategoryDetailsComponent } from './Components/CategoryDetails/category-details.component';
 import { SubCategoryDetailsComponent } from './Components/sub-category-details/sub-category-details.component';
@@ -27,6 +27,7 @@ import { CheckoutComponent } from './Components/checkout/checkout.component';
 import { OrdersComponent } from './Components/orders/orders.component';
 import { ProfileComponent } from './Components/profile/profile.component';
 import { AllProductsComponent } from './Components/all-products/all-products.component';
+import { authGuard } from './Core/guards/auth-guard.guard';
 
 export const routes: Routes = [
   {

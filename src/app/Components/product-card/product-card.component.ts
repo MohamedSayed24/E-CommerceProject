@@ -64,50 +64,32 @@ export class ProductCardComponent {
   /**
    * Get category badge color based on category name
    */
-  getCategoryBadgeColor(categoryName: string): string {
+  getCategoryBadgeColor(categoryName: string): 'red' | 'blue' | 'purple' | 'pink' | 'yellow' | 'green' | 'indigo' | 'gray' {
     const lowerCaseName = categoryName.toLowerCase();
     
-    if (lowerCaseName.includes('women')) {
-      return 'bg-red-100 text-red-700';
-    } else if (lowerCaseName.includes('men')) {
-      return 'bg-blue-100 text-blue-700';
-    } else if (lowerCaseName.includes('electronics')) {
-      return 'bg-purple-100 text-purple-700';
-    } else if (lowerCaseName.includes('music')) {
-      return 'bg-pink-100 text-pink-700';
-    } else if (lowerCaseName.includes('baby')) {
-      return 'bg-yellow-100 text-yellow-700';
-    } else if (lowerCaseName.includes('home')) {
-      return 'bg-green-100 text-green-700';
-    } else if (lowerCaseName.includes('books')) {
-      return 'bg-indigo-100 text-indigo-700';
-    } else {
-      return 'bg-gray-100 text-gray-700';
-    }
+    if (lowerCaseName.includes('women')) return 'red';
+    if (lowerCaseName.includes('men')) return 'blue';
+    if (lowerCaseName.includes('electronics')) return 'purple';
+    if (lowerCaseName.includes('music')) return 'pink';
+    if (lowerCaseName.includes('baby')) return 'yellow';
+    if (lowerCaseName.includes('home')) return 'green';
+    if (lowerCaseName.includes('books')) return 'indigo';
+    return 'gray';
   }
 
   /**
    * Get subcategory badge color (complementary to category)
    */
-  getSubcategoryBadgeColor(categoryName: string): string {
+  getSubcategoryBadgeColor(categoryName: string): 'red' | 'blue' | 'purple' | 'pink' | 'yellow' | 'green' | 'indigo' | 'gray' {
     const lowerCaseName = categoryName.toLowerCase();
     
-    if (lowerCaseName.includes('women')) {
-      return 'bg-orange-100 text-orange-700';
-    } else if (lowerCaseName.includes('men')) {
-      return 'bg-cyan-100 text-cyan-700';
-    } else if (lowerCaseName.includes('electronics')) {
-      return 'bg-violet-100 text-violet-700';
-    } else if (lowerCaseName.includes('music')) {
-      return 'bg-rose-100 text-rose-700';
-    } else if (lowerCaseName.includes('baby')) {
-      return 'bg-amber-100 text-amber-700';
-    } else if (lowerCaseName.includes('home')) {
-      return 'bg-emerald-100 text-emerald-700';
-    } else if (lowerCaseName.includes('books')) {
-      return 'bg-sky-100 text-sky-700';
-    } else {
-      return 'bg-slate-100 text-slate-700';
-    }
+    if (lowerCaseName.includes('women')) return 'pink';
+    if (lowerCaseName.includes('men')) return 'indigo';
+    if (lowerCaseName.includes('electronics')) return 'blue';
+    if (lowerCaseName.includes('music')) return 'red';
+    if (lowerCaseName.includes('baby')) return 'yellow';
+    if (lowerCaseName.includes('home')) return 'green';
+    if (lowerCaseName.includes('books')) return 'purple';
+    return 'gray';
   }
 }

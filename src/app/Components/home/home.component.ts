@@ -10,6 +10,7 @@ import { ProductService } from '../../Core/services/product.service';
 import { CartService } from '../../Core/services/cart.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { ProductQuickViewComponent } from '../product-quick-view/product-quick-view.component';
+import { ToastService } from '../../Core/services/toast.service';
 
 // Services
 
@@ -104,12 +105,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   private countdownSubscription?: Subscription;
   private flashSaleEndTime!: Date;
 
+  // Subscriptions for cleanup
+  private loadCategoriesSubscription!: Subscription;
+  private loadFlashSaleProductsSubscription!: Subscription;
+  private loadBestSellingProductsSubscription!: Subscription;
+  private loadExploreProductsSubscription!: Subscription;
+
   constructor(
     private categoryService: CategoriesService,
     private productService: ProductService,
     private cartService: CartService,
     private wishlistService: WishlistService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -124,6 +132,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
     }
+    this.loadCategoriesSubscription?.unsubscribe();
+    this.loadFlashSaleProductsSubscription?.unsubscribe();
+    this.loadBestSellingProductsSubscription?.unsubscribe();
+    this.loadExploreProductsSubscription?.unsubscribe();
   }
 
   // ========================================
@@ -131,7 +143,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ========================================
   loadCategories(): void {
     this.isLoadingCategories = true;
-    this.categoryService.getAllCategories().subscribe({
+    this.loadCategoriesSubscription = this.categoryService.getAllCategories().subscribe({
       next: (response) => {
         this.categories = response.data;
         this.isLoadingCategories = false;
@@ -154,7 +166,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingFlashSales = true;
     
     // Fetch products from both pages to get all products
-    forkJoin([
+    this.loadFlashSaleProductsSubscription = forkJoin([
       this.productService.getAllProducts(1),
       this.productService.getAllProducts(2)
     ]).pipe(
@@ -207,7 +219,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingBestSelling = true;
     
     // Fetch products from both pages
-    forkJoin([
+    this.loadBestSellingProductsSubscription = forkJoin([
       this.productService.getAllProducts(1),
       this.productService.getAllProducts(2)
     ]).pipe(
@@ -247,7 +259,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingExploreProducts = true;
     
     // Fetch products from both pages
-    forkJoin([
+    this.loadExploreProductsSubscription = forkJoin([
       this.productService.getAllProducts(1),
       this.productService.getAllProducts(2)
     ]).pipe(
@@ -324,11 +336,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.cartService.addProductToCart(productId).subscribe({
       next: () => {
-        alert('Product added to cart!');
+        this.toastService.success('Product added to cart!');
       },
       error: (error) => {
         console.error('Error adding to cart:', error);
-        alert('Failed to add to cart');
+        this.toastService.error('Failed to add to cart');
       }
     });
   }
@@ -337,11 +349,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.wishlistService.addToWishlist(productId).subscribe({
       next: () => {
-        alert('Added to wishlist!');
+        this.toastService.success('Added to wishlist!');
       },
       error: (error) => {
         console.error('Error adding to wishlist:', error);
-        alert('Failed to add to wishlist');
+        this.toastService.error('Failed to add to wishlist');
       }
     });
   }

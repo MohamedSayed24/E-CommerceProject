@@ -133,14 +133,11 @@
             <p>Password Is Required</p>
           </div>
           }
-          @else if(registeredData.get('password')?.getError('pattern'))
+          @else if(registeredData.get('password')?.getError('minlength'))
           {
           <div class="text-red-500 text-sm mt-2 animate-fade-in flex items-center gap-1">
             <span class="text-lg">●</span>
-            <p>
-              Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter,
-              one number, and one special character.
-            </p>
+            <p>Password must be at least 6 characters long.</p>
           </div>
           }
           }

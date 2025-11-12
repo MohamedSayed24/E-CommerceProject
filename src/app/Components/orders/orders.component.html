@@ -7,36 +7,41 @@
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="isLoading" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-500"></div>
-    </div>
+    @if (isLoading) {
+      <div class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-500"></div>
+      </div>
+    }
 
     <!-- Error Message -->
-    <div *ngIf="errorMessage && !isLoading"
-      class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
-      <i class="fas fa-exclamation-circle"></i>
-      {{ errorMessage }}
-    </div>
+    @if (errorMessage && !isLoading) {
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ errorMessage }}
+      </div>
+    }
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && orders.length === 0 && !errorMessage"
-      class="text-center py-20 bg-white rounded-lg shadow-md">
-      <div class="mb-6">
-        <i class="fas fa-shopping-bag text-gray-300 text-8xl"></i>
+    @if (!isLoading && orders.length === 0 && !errorMessage) {
+      <div class="text-center py-20 bg-white rounded-lg shadow-md">
+        <div class="mb-6">
+          <i class="fas fa-shopping-bag text-gray-300 text-8xl"></i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-2">No orders yet</h2>
+        <p class="text-gray-500 mb-6">Start shopping to place your first order!</p>
+        <a routerLink="/blank/home"
+          class="inline-block bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 transition-colors">
+          <i class="fas fa-shopping-cart mr-2"></i>
+          Start Shopping
+        </a>
       </div>
-      <h2 class="text-2xl font-semibold text-gray-700 mb-2">No orders yet</h2>
-      <p class="text-gray-500 mb-6">Start shopping to place your first order!</p>
-      <a routerLink="/blank/home"
-        class="inline-block bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 transition-colors">
-        <i class="fas fa-shopping-cart mr-2"></i>
-        Start Shopping
-      </a>
-    </div>
+    }
 
     <!-- Orders List -->
-    <div *ngIf="!isLoading && orders.length > 0" class="space-y-6">
-      <div *ngFor="let order of orders"
-        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    @if (!isLoading && orders.length > 0) {
+      <div class="space-y-6">
+        @for (order of orders; track order._id) {
+          <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
 
         <!-- Order Header -->
         <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4">
@@ -90,7 +95,8 @@
               Order Items ({{ order.cartItems?.length || 0 }})
             </h4>
             <div class="space-y-3">
-              <div *ngFor="let item of order.cartItems" class="flex gap-4 p-3 bg-gray-50 rounded-lg">
+              @for (item of order.cartItems; track item.product._id) {
+                <div class="flex gap-4 p-3 bg-gray-50 rounded-lg">
                 <img [src]="item.product.imageCover" [alt]="item.product.title" [title]="item.product.title"
                   class="w-20 h-20 object-cover rounded" alt="Product image">
                 <div class="flex-1">
@@ -106,6 +112,7 @@
                   <p class="text-lg font-bold text-gray-900">{{ item.price * item.count }} EGP</p>
                 </div>
               </div>
+            }
             </div>
           </div>
 
@@ -117,12 +124,16 @@
               <span>Payment Method: <span class="font-medium text-gray-900">{{ order.paymentMethodType === 'cash' ?
                   'Cash on Delivery' : 'Online Payment' }}</span></span>
             </div>
-            <div *ngIf="order.paidAt" class="text-sm text-gray-600">
-              <span>Paid on: <span class="font-medium text-gray-900">{{ formatDate(order.paidAt) }}</span></span>
-            </div>
+            @if (order.paidAt) {
+              <div class="text-sm text-gray-600">
+                <span>Paid on: <span class="font-medium text-gray-900">{{ formatDate(order.paidAt) }}</span></span>
+              </div>
+            }
           </div>
         </div>
       </div>
+    }
     </div>
+  }
   </div>
 </div>

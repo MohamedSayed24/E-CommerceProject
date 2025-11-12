@@ -1,12 +1,13 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { ProductService } from '../../Core/services/product.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { CartService } from '../../Core/services/cart.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { register } from 'swiper/element/bundle';
+import { ToastService } from '../../Core/services/toast.service';
 
 // Register Swiper
 register();
@@ -29,7 +30,7 @@ interface Product {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './product.component.html',
 })
-export class ProductComponent implements OnInit {
+export class ProductComponent implements OnInit, OnDestroy {
   product$!: Observable<any>;
   productId!: string;
   brandId!: string | null;
@@ -42,12 +43,17 @@ export class ProductComponent implements OnInit {
   relatedProducts: Product[] = [];
   isLoadingRelatedProducts: boolean = false;
 
+  // Subscriptions for cleanup
+  private loadRelatedProductsSubscription!: Subscription;
+  private loadRelatedProductsCategorySubscription!: Subscription;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -63,17 +69,22 @@ export class ProductComponent implements OnInit {
       this.product$ = this.productService.getProductById(this.brandId);
     }
   }
+
+  ngOnDestroy(): void {
+    this.loadRelatedProductsSubscription?.unsubscribe();
+    this.loadRelatedProductsCategorySubscription?.unsubscribe();
+  }
   
   loadRelatedProducts(): void {
     this.isLoadingRelatedProducts = true;
     
     // First get the current product to get its category
-    this.productService.getProductById(this.productId).subscribe({
+    this.loadRelatedProductsCategorySubscription = this.productService.getProductById(this.productId).subscribe({
       next: (productData) => {
         const categoryId = productData.data.category._id;
         
         // Get all products from the same category
-        this.productService.getAllProducts(1).subscribe({
+        this.loadRelatedProductsSubscription = this.productService.getAllProducts(1).subscribe({
           next: (response) => {
             // Filter products from same category, exclude current product, take first 8
             this.relatedProducts = response.data
@@ -118,28 +129,17 @@ export class ProductComponent implements OnInit {
     }
 
     this.isAddingToCart = true;
-    this.addToCartMessage = '';
 
     this.cartService.addProductToCart(id).subscribe({
       next: (response) => {
         this.isAddingToCart = false;
-        this.addToCartMessage = 'Product added to cart successfully!';
+        this.toastService.success('Product added to cart successfully!');
         console.log('Added to cart:', response);
-
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-          this.addToCartMessage = '';
-        }, 3000);
       },
       error: (error) => {
         this.isAddingToCart = false;
-        this.addToCartMessage = 'Failed to add product to cart';
+        this.toastService.error('Failed to add product to cart');
         console.error('Error adding to cart:', error);
-
-        // Clear error message after 3 seconds
-        setTimeout(() => {
-          this.addToCartMessage = '';
-        }, 3000);
       },
     });
   }
@@ -147,9 +147,11 @@ export class ProductComponent implements OnInit {
   addToWishlist(productId: string): void {
     this.wishlistService.addToWishlist(productId).subscribe({
       next: (response: any) => {
+        this.toastService.success('Added to wishlist!');
         console.log('Added to wishlist:', response);
       },
       error: (error: any) => {
+        this.toastService.error('Failed to add to wishlist');
         console.error('Error adding to wishlist:', error);
       },
     });
@@ -166,7 +168,5 @@ export class ProductComponent implements OnInit {
     });
   }
   
-  getStarArray(rating: number): boolean[] {
-    return Array(5).fill(false).map((_, index) => index < Math.round(rating));
-  }
+
 }

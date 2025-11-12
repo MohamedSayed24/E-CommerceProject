@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { CartService, CartData, CartProduct } from '../../Core/services/cart.service';
 
 @Component({
@@ -9,12 +10,18 @@ import { CartService, CartData, CartProduct } from '../../Core/services/cart.ser
   imports: [CommonModule],
   templateUrl: './cart.component.html'
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
   cartData: CartData | null = null;
   isLoading: boolean = true;
   errorMessage: string = '';
   isUpdating: boolean = false;
   showClearModal: boolean = false;
+
+  // Subscriptions for cleanup
+  private loadCartSubscription!: Subscription;
+  private updateQuantitySubscription!: Subscription;
+  private removeItemSubscription!: Subscription;
+  private clearCartSubscription!: Subscription;
 
   constructor(
     private cartService: CartService,
@@ -25,12 +32,19 @@ export class CartComponent implements OnInit {
     this.loadCart();
   }
 
+  ngOnDestroy(): void {
+    this.loadCartSubscription?.unsubscribe();
+    this.updateQuantitySubscription?.unsubscribe();
+    this.removeItemSubscription?.unsubscribe();
+    this.clearCartSubscription?.unsubscribe();
+  }
+
   /**
    * Load cart data
    */
   loadCart(): void {
     this.isLoading = true;
-    this.cartService.getLoggedUserCart().subscribe({
+    this.loadCartSubscription = this.cartService.getLoggedUserCart().subscribe({
       next: (response) => {
         this.cartData = response.data;
         this.isLoading = false;
@@ -50,7 +64,7 @@ export class CartComponent implements OnInit {
     if (newCount < 1) return; // Prevent quantity less than 1
     
     this.isUpdating = true;
-    this.cartService.updateCartProductQuantity(productId, newCount).subscribe({
+    this.updateQuantitySubscription = this.cartService.updateCartProductQuantity(productId, newCount).subscribe({
       next: (response) => {
         this.cartData = response.data;
         this.isUpdating = false;
@@ -84,7 +98,7 @@ export class CartComponent implements OnInit {
    */
   removeItem(productId: string): void {
     this.isUpdating = true;
-    this.cartService.removeSpecificCartItem(productId).subscribe({
+    this.removeItemSubscription = this.cartService.removeSpecificCartItem(productId).subscribe({
       next: (response) => {
         this.cartData = response.data;
         this.isUpdating = false;
@@ -123,7 +137,7 @@ export class CartComponent implements OnInit {
     this.closeClearModal();
     this.isUpdating = true;
     
-    this.cartService.clearUserCart().subscribe({
+    this.clearCartSubscription = this.cartService.clearUserCart().subscribe({
       next: () => {
         this.cartData = null;
         this.isUpdating = false;

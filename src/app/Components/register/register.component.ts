@@ -27,9 +27,7 @@ export class RegisterComponent {
       email: new FormControl(null, [Validators.required, Validators.email]),
       password: new FormControl(null, [
         Validators.required,
-        Validators.pattern(
-          '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$'
-        ),
+        Validators.minLength(6),
       ]),
       rePassword: new FormControl(null),
       phone: new FormControl(null, [

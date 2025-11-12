@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../Core/services/cart.service';
 import { WishlistService } from '../../Core/services/wishlist.service';
+import { ToastService } from '../../Core/services/toast.service';
 
 interface Product {
   _id: string;
@@ -39,7 +40,8 @@ export class ProductQuickViewComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -90,13 +92,12 @@ export class ProductQuickViewComponent implements OnInit {
     this.cartService.addProductToCart(this.product._id).subscribe({
       next: () => {
         this.isAddingToCart = false;
-        // You can add a toast notification here
-        alert('Product added to cart!');
+        this.toastService.success('Product added to cart!');
       },
       error: (error) => {
         this.isAddingToCart = false;
         console.error('Error adding to cart:', error);
-        alert('Failed to add to cart');
+        this.toastService.error('Failed to add to cart');
       }
     });
   }
@@ -108,12 +109,12 @@ export class ProductQuickViewComponent implements OnInit {
     this.wishlistService.addToWishlist(this.product._id).subscribe({
       next: () => {
         this.isAddingToWishlist = false;
-        alert('Added to wishlist!');
+        this.toastService.success('Added to wishlist!');
       },
       error: (error) => {
         this.isAddingToWishlist = false;
         console.error('Error adding to wishlist:', error);
-        alert('Failed to add to wishlist');
+        this.toastService.error('Failed to add to wishlist');
       }
     });
   }
