@@ -38,9 +38,7 @@ export class ProductCardComponent {
     this.viewDetailsClick.emit(this.product._id);
   }
 
-  /**
-   * Get category badge color based on category name
-   */
+
   getCategoryBadgeColor(
     categoryName: string
   ):
@@ -64,9 +62,7 @@ export class ProductCardComponent {
     return 'gray';
   }
 
-  /**
-   * Get subcategory badge color (complementary to category)
-   */
+
   getSubcategoryBadgeColor(
     categoryName: string
   ):
