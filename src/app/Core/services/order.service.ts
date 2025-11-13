@@ -13,7 +13,7 @@ export class OrderService {
   /**
    * Create cash order
    * @param cartId - The cart ID
-   * @param shippingAddress - Address object with details, phone, city
+   * @param shippingAddress
    */
   createCashOrder(cartId: string, shippingAddress: any): Observable<any> {
     return this.http.post(`${this.API_URL}/${cartId}`, {

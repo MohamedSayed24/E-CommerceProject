@@ -1,6 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  catchError,
+  map,
+  tap,
+  throwError,
+} from 'rxjs';
 
 // Interfaces for type safety
 export interface CartProduct {
@@ -31,11 +38,11 @@ export interface CartResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CartService {
   private readonly API_URL = 'https://ecommerce.routemisr.com/api/v1';
-  
+
   // BehaviorSubject to track cart count in real-time
   private cartItemCount$ = new BehaviorSubject<number>(0);
   public cartCount$ = this.cartItemCount$.asObservable();
@@ -49,9 +56,6 @@ export class CartService {
     this.loadCart();
   }
 
-  /**
-   * Load cart and update observables
-   */
   private loadCart(): void {
     this.getLoggedUserCart().subscribe({
       next: (response) => {
@@ -63,47 +67,45 @@ export class CartService {
       error: (err) => {
         // Silent fail on initialization, user might not be logged in
         console.log('Cart not loaded:', err);
-      }
+      },
     });
   }
 
-  /**
-   * Add product to cart
-   */
   addProductToCart(productId: string): Observable<CartResponse> {
-    return this._http.post<CartResponse>(`${this.API_URL}/cart`, { productId }).pipe(
-      tap((response) => {
-        // Update cart count and data after successful addition
-        this.cartItemCount$.next(response.numOfCartItems);
-        this.cartData$.next(response.data);
-      }),
-      catchError((error) => {
-        console.error('Error adding product to cart:', error);
-        return throwError(() => error);
-      })
-    );
+    return this._http
+      .post<CartResponse>(`${this.API_URL}/cart`, { productId })
+      .pipe(
+        tap((response) => {
+          // Update cart count and data after successful addition
+          this.cartItemCount$.next(response.numOfCartItems);
+          this.cartData$.next(response.data);
+        }),
+        catchError((error) => {
+          console.error('Error adding product to cart:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
-  /**
-   * Update product quantity in cart
-   */
-  updateCartProductQuantity(productId: string, count: number): Observable<CartResponse> {
-    return this._http.put<CartResponse>(`${this.API_URL}/cart/${productId}`, { count }).pipe(
-      tap((response) => {
-        // Update cart count and data after successful update
-        this.cartItemCount$.next(response.numOfCartItems);
-        this.cartData$.next(response.data);
-      }),
-      catchError((error) => {
-        console.error('Error updating product quantity:', error);
-        return throwError(() => error);
-      })
-    );
+  updateCartProductQuantity(
+    productId: string,
+    count: number
+  ): Observable<CartResponse> {
+    return this._http
+      .put<CartResponse>(`${this.API_URL}/cart/${productId}`, { count })
+      .pipe(
+        tap((response) => {
+          // Update cart count and data after successful update
+          this.cartItemCount$.next(response.numOfCartItems);
+          this.cartData$.next(response.data);
+        }),
+        catchError((error) => {
+          console.error('Error updating product quantity:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
-  /**
-   * Get logged user's cart
-   */
   getLoggedUserCart(): Observable<CartResponse> {
     return this._http.get<CartResponse>(`${this.API_URL}/cart`).pipe(
       tap((response) => {
@@ -121,26 +123,22 @@ export class CartService {
     );
   }
 
-  /**
-   * Remove specific item from cart
-   */
   removeSpecificCartItem(productId: string): Observable<CartResponse> {
-    return this._http.delete<CartResponse>(`${this.API_URL}/cart/${productId}`).pipe(
-      tap((response) => {
-        // Update cart count and data after successful removal
-        this.cartItemCount$.next(response.numOfCartItems);
-        this.cartData$.next(response.data);
-      }),
-      catchError((error) => {
-        console.error('Error removing item from cart:', error);
-        return throwError(() => error);
-      })
-    );
+    return this._http
+      .delete<CartResponse>(`${this.API_URL}/cart/${productId}`)
+      .pipe(
+        tap((response) => {
+          // Update cart count and data after successful removal
+          this.cartItemCount$.next(response.numOfCartItems);
+          this.cartData$.next(response.data);
+        }),
+        catchError((error) => {
+          console.error('Error removing item from cart:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
-  /**
-   * Clear entire cart
-   */
   clearUserCart(): Observable<any> {
     return this._http.delete(`${this.API_URL}/cart`).pipe(
       tap(() => {
@@ -155,50 +153,34 @@ export class CartService {
     );
   }
 
-  /**
-   * Get current cart item count (synchronous)
-   */
   getCartCount(): number {
     return this.cartItemCount$.value;
   }
 
-  /**
-   * Get current cart data (synchronous)
-   */
   getCurrentCart(): CartData | null {
     return this.cartData$.value;
   }
 
-  /**
-   * Check if a product exists in cart
-   */
   isProductInCart(productId: string): boolean {
     const cart = this.cartData$.value;
     if (!cart || !cart.products) return false;
-    return cart.products.some(item => item.product._id === productId);
+    return cart.products.some((item) => item.product._id === productId);
   }
 
-  /**
-   * Get product quantity in cart
-   */
   getProductQuantity(productId: string): number {
     const cart = this.cartData$.value;
     if (!cart || !cart.products) return 0;
-    const product = cart.products.find(item => item.product._id === productId);
+    const product = cart.products.find(
+      (item) => item.product._id === productId
+    );
     return product ? product.count : 0;
   }
 
-  /**
-   * Calculate total cart price
-   */
   getTotalPrice(): number {
     const cart = this.cartData$.value;
     return cart ? cart.totalCartPrice : 0;
   }
 
-  /**
-   * Refresh cart data from server
-   */
   refreshCart(): void {
     this.loadCart();
   }
