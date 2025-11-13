@@ -9,19 +9,10 @@
 
     <!-- Desktop Navigation -->
     <div class="hidden md:flex items-center gap-8 lg:gap-12">
-      <div class="flex gap-8 lg:gap-12 items-center">
-        <a routerLink="register" routerLinkActive="border-b-2 border-[#DB4444]"
-          class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Sign Up</a>
-        <a routerLink="login" routerLinkActive="border-b-2 border-[#DB4444]"
-          class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Login</a>
-      </div>
-
-      <div class="relative flex items-center">
-        <input
-          class="w-48 lg:w-60 placeholder-gray-400 text-sm px-4 py-2 pr-10 bg-gray-50 border-0 rounded text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
-          type="search" placeholder="What are you looking for?" />
-        <i class="fas fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"></i>
-      </div>
+      <a routerLink="register" routerLinkActive="border-b-2 border-[#DB4444]"
+        class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Sign Up</a>
+      <a routerLink="login" routerLinkActive="border-b-2 border-[#DB4444]"
+        class="text-base text-black hover:text-[#DB4444] transition-colors duration-200 pb-1">Login</a>
     </div>
 
     <!-- Mobile Hamburger Button -->
@@ -41,26 +32,16 @@
   <!-- Mobile Menu -->
   @if (isMobileMenuOpen) {
     <div class="md:hidden bg-white border-t border-gray-200 animate-slide-down">
-      <div class="px-4 py-4 space-y-4">
-        <!-- Search Bar -->
-        <div class="relative flex items-center">
-          <input
-            class="w-full placeholder-gray-400 text-sm px-4 py-2 pr-10 bg-gray-50 border-0 rounded text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
-            type="search" placeholder="What are you looking for?" />
-          <i class="fas fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"></i>
-        </div>
-
+      <div class="px-4 py-4 space-y-2">
         <!-- Navigation Links -->
-        <div class="space-y-2 pt-2 border-t border-gray-200">
-          <a routerLink="register" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
-            class="block py-3 text-base text-gray-700 hover:text-red-500 transition-colors">
-            <i class="fas fa-user-plus w-5 mr-3"></i>Sign Up
-          </a>
-          <a routerLink="login" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
-            class="block py-3 text-base text-gray-700 hover:text-red-500 transition-colors">
-            <i class="fas fa-sign-in-alt w-5 mr-3"></i>Login
-          </a>
-        </div>
+        <a routerLink="register" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
+          class="block py-3 text-base text-gray-700 hover:text-red-500 transition-colors">
+          <i class="fas fa-user-plus w-5 mr-3"></i>Sign Up
+        </a>
+        <a routerLink="login" (click)="closeMobileMenu()" routerLinkActive="text-red-500 font-semibold"
+          class="block py-3 text-base text-gray-700 hover:text-red-500 transition-colors">
+          <i class="fas fa-sign-in-alt w-5 mr-3"></i>Login
+        </a>
       </div>
     </div>
   }

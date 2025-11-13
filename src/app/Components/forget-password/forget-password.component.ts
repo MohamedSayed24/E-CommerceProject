@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../Core/services/auth.service';
 import { PasswordResetService } from '../../Core/services/passwordreset.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-forget-password',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink, CommonModule],
   templateUrl: './forget-password.component.html'
 })
 export class ForgetPasswordComponent {
